@@ -6,8 +6,8 @@ in extent and resolution.
 TODO:
 * [ ] Init spatial parameters 
  - define geotransforms for:
-  -- Source (srb, WGS84 lo res)
-  -- Intermediate, WGS84 high res
+  + [ ] Source (srb, WGS84 lo res)
+  + [ ] Intermediate, WGS84 high res
 * [ ] Init temporal parameters?
  - months and years to cover?  default 1984-2007, all 12 months? Possibly useful to run 'just April and June' or something?  
 * [ ] Prepare DEM derivatives:

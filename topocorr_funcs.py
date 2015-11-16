@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 '''Functions for calculating topographic corrections to surface downwelling irradiance
 
 These functions are mostly implementations of the equations from the following two refernces:

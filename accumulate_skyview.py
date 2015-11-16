@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 '''Define skyview using the shade grids for az=0:369 and zen=0:89
 
 Not all angles are reasonable orientations for a sun, especially in Norway,

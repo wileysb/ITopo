@@ -622,7 +622,7 @@ def collect_shade(lat, lon, yday, utc_hour):
 
 
 # Some general purpose or notemaking geospatial functions:
-def prj_mkdir(dir_path):
+def Prj_mkdir(dir_path):
     '''Create a directory, with a bit of extra syntax.
 
     Check if directory exists, print error and exit if directory cannot be created.

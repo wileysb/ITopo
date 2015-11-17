@@ -22,8 +22,8 @@ example:
 gjende30m:
 
  ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
- src_dem: /home/sl_wib/itopo/gjendepath/to/dem.tif
- srb_dir: /path/to/srb/
+ src_dem: /home/sl_wib/itopo/data/gtopo30arcsec_norway.tif
+ srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
  itopo_dir: /home/sl_wib/itopo/gjende/
 
  ### DEFINE SPATIAL EXTENTS ###

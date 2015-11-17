@@ -7,8 +7,34 @@ example:
  itopo_dir: /path/to/itopo_output/
 
  ### DEFINE SPATIAL EXTENTS ###
+ # If epsg does not match src_dem, gdalwarp might reproject src_dem to produce aoi dem
+ # If EPSG is not given, it is derived from src_dem.
+ epsg: 32633 # EPSG code for AOI projection. if prj_dem exists, this param value will be ignored
+ dx: 100  # E-W Resolution of prj_dem and output. if prj_dem exists, this param value will be ignored
+ dy: -100 # (negative) N-S Resolution of prj_dem and output. if prj_dem exists, this param value will be ignored
+ xmin: 0 # easting of AOI's left edge, if prj_dem exists, this param value will be ignored
+ ymin: 0 # northing of AOI's bottom edge, if prj_dem exists, this param value will be ignored
+ xmax: 4 # easting of AOI's right edge, if prj_dem exists, this param value will be ignored
+ ymax: 4 # northing of AOI's top edge, if prj_dem exists, this param value will be ignored
+
+
+ ### PROJECT NAME ###
+gjende30m:
+
+ ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
+ src_dem: /home/sl_wib/itopo/gjendepath/to/dem.tif
+ srb_dir: /path/to/srb/
+ itopo_dir: /home/sl_wib/itopo/gjende/
+
+ ### DEFINE SPATIAL EXTENTS ###
+ # 61.4894° N, 8.6800° E
+ # These will be snapped to the
+ # ctr_X: 163821
+ # ctr_Y: 6833617
  epsg: 32633 # UTM33N
- xmin: 0
- ymin: 0
- xmax: 4
- ymax: 4
+ dx: 100
+ dy: -100
+ xmin: 110000
+ ymin: 6780000
+ xmax: 210000
+ ymax: 6880000

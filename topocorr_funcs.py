@@ -66,6 +66,7 @@ dem_dir = '/home/sl_wib/dem_dir/'
 shade_dir='/home/sl_wib/shade/'
 
 # Define metadata for raster grids
+deleteme = '''
 utm33n_md   = { 'outfn':None,
                 'from_dset':None, # [y,x] array or gdal dataset
                 'epsg':32633,
@@ -95,26 +96,7 @@ wgs84hi =     { 'outfn':'MEM',
                 'dy':-0.008333333333333333,
                 'ulx':4.5,
                 'uly':72.5}
-
-
-def prj_mkdir(dir_path):
-    '''Create a directory, with a bit of extra syntax.
-
-    Check if directory exists, print error and exit if directory cannot be created.
-    This error probably indicates a bad path, pointing to a directory structure
-    which doesn't exist yet.
-
-    :param dir_path: path to directory to create
-    :return: Exit(1) on failure, None on success
-    '''
-    if not os.path.isdir(dir_path):
-        try:
-            os.mkdir(dir_path)
-        except:
-            print '[ERROR] Problem creating ',dir_path
-            sys.exit(1)
-
-
+'''
 
 def Correct_a_month(mm='06', yyyy='2006'):
     '''
@@ -557,7 +539,7 @@ def unpack_srb_variables(srb_fn):
     srb = netcdf_file(srb_fn,'r',mmap=False)
 
     # Norway boundaries
-    lon_s = 4
+    lon_s = 4 # todo these have to be dynamic, not fixed to whole norway
     lon_e = 32
     lat_s = 90+57
     lat_e = 90+72
@@ -640,6 +622,43 @@ def collect_shade(lat, lon, yday, utc_hour):
 
 
 # Some general purpose or notemaking geospatial functions:
+def prj_mkdir(dir_path):
+    '''Create a directory, with a bit of extra syntax.
+
+    Check if directory exists, print error and exit if directory cannot be created.
+    This error probably indicates a bad path, pointing to a directory structure
+    which doesn't exist yet.
+
+    :param dir_path: path to directory to create
+    :return: Exit(1) on failure, None on success
+    '''
+    if not os.path.isdir(dir_path):
+        try:
+            os.mkdir(dir_path)
+        except:
+            print '[ERROR] Problem creating ',dir_path
+            sys.exit(1)
+
+
+def Get_gt_dict(ras_fn):
+    ds = gdal.Open(ras_fn,gdal.GA_ReadOnly)
+    srs_wkt = ds.GetProjectionRef()
+    srs = osr.SpatialReference()
+    srs.ImportFromWkt(srs_wkt)
+    srs.AutoIdentifyEPSG() # this can, unlikely, fail.
+    srs_epsg = srs.GetAuthorityCode(None)
+    gt = ds.GetGeoTransform()
+
+    gt_dict = {'epsg':srs_epsg,
+                'x_size': ds.RasterXSize,
+                'y_size': ds.RasterYSize,
+                'dx':gt[1],
+                'dy':gt[5],
+                'ulx':gt[0],  # 4.5,
+                'uly': gt[3]}#  72.5}
+    return gt_dict
+
+
 def srb_to_utm(srb_3hr_vars, out_dir):
 
     yyyy = srb_3hr_vars['year']
@@ -881,6 +900,31 @@ def mk_gtopo_latlon():
     
     np.savetxt('/home/wiley/wrk/ryan/gtopo30_lon.asc',lonv)
     np.savetxt('/home/wiley/wrk/ryan/gtopo30_lat.asc',latv)
+
+
+def Define_grid(ras_fn):
+    ds = gdal.Open(ras_fn,gdal.GA_ReadOnly)
+    ulx,dx,rot0,uly,rot1,dy = ds.GetGeoTransform()
+    xsize = ds.RasterXSize
+    ysize = ds.RasterYSize
+
+    xs = ulx + np.arange(xsize)*dx
+    ys = uly + np.arange(ysize)*dy
+
+    return xs,ys
+
+
+def Snap_extents_to_grid(grid_x,grid_y,fxmin,fymin,fxmax,fymax):
+    xmin = grid_x[np.where(fxmin>=grid_x)[0][-1]]
+    xmax = grid_x[np.where(fxmax<=grid_x)[0][0]]
+    ymin = grid_y[np.where(fymin>=grid_y)[0][0]]
+    ymax = grid_y[np.where(fymax<=grid_y)[0][-1]]
+
+    if (xmin<=fxmin) & (ymin<=fymin) & (xmax>=fxmax) & (ymax>=fymax):
+        return xmin,ymin,xmax,ymax
+    else:
+        return 'SNAP_TO_GRID ERROR'
+
 
 
 def transform_utm2geog():

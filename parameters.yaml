@@ -1,0 +1,14 @@
+### PROJECT NAME ###
+example:
+
+ ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
+ src_dem: /path/to/dem.tif
+ srb_dir: /path/to/srb/
+ itopo_dir: /path/to/itopo_output/
+
+ ### DEFINE SPATIAL EXTENTS ###
+ epsg: 32633 # UTM33N
+ xmin: 0
+ ymin: 0
+ xmax: 4
+ ymax: 4

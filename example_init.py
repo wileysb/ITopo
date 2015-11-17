@@ -1,27 +1,36 @@
 #!/usr/bin/python
 
+prj_name = 'example'
 __author__ = 'Wiley Bogren'
 
 import subprocess
 import shlex
 import os
+import yaml
 from topocorr_funcs import prj_mkdir
-from example_parameters import *
 
-# Create dirs
-dem_dir: os.path.join(prj_dir, 'dem_derivs/')
-BOG_dir: os.path.join(dem_dir, 'BOGs')
 
-prj_mkdir(prj_dir)
-prj_mkdir(dem_dir)
-prj_mkdir(BOG_dir)
+### LOAD PROJECT PARAMETERS ###
+with file('parameters.yaml','r') as f:
+    parameters = yaml.safe_load_all(f)
 
-# Clip DEM
-prj_dem = os.path.join(dem_dir,prj_name+'_dem.tif')
+prj = parameters[prj_name]
+
+prj['dem_dir'] = os.path.join(prj['itopo_dir'], 'dem_derivs/')
+prj['BOG_dir'] = os.path.join(prj['dem_dir'], 'BOGs')
+
+### CREATE DIRS, IF NECESSARY
+prj_mkdir(prj['itopo_dir'])
+prj_mkdir(prj['dem_dir'])
+prj_mkdir(prj['BOG_dir'])
+
+
+### Clip DEM ###
+prj['dem'] = os.path.join(prj['dem_dir'],prj_name+'_dem.tif')
 if not os.path.isfile(prj_dem):
-    gdalwarp_cmd = 'gdalwarp -t_srs "EPSG:{0}" -te {1} {2} {3} {4} -r cubic -of GTiff {5} {6}'.format(prj_epsg,
-                    prj_extents['xmin'],prj_extents['ymin'],prj_extents['xmax'],prj_extents['ymax'],
-                    src_dem,prj_dem)
+    gdalwarp_cmd = 'gdalwarp -t_srs "EPSG:{0}" -te {1} {2} {3} {4} -r cubic -of GTiff {5} {6}'.format(prj['epsg'],
+                    prj['xmin'],prj['ymin'],prj['xmax'],prj['ymax'],
+                    prj['src_dem'],prj['prj_dem'])
     args = shlex.split(gdalwarp_cmd)
     p = subprocess.Popen(args)  # todo test this!
 

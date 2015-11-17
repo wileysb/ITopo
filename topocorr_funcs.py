@@ -55,6 +55,7 @@ import gdal
 import ogr
 import osr
 import os
+import sys
 
 # file paths and such
 srb_3hr_fmt = '/space/wib_data/CLIMATE/NASA/srb_3hr/srb_rel3.0_shortwave_3hrly_{0}{1}.nc'#.format(yyyy,mm)
@@ -94,6 +95,24 @@ wgs84hi =     { 'outfn':'MEM',
                 'dy':-0.008333333333333333,
                 'ulx':4.5,
                 'uly':72.5}
+
+
+def prj_mkdir(dir_path):
+    '''Create a directory, with a bit of extra syntax.
+
+    Check if directory exists, print error and exit if directory cannot be created.
+    This error probably indicates a bad path, pointing to a directory structure
+    which doesn't exist yet.
+
+    :param dir_path: path to directory to create
+    :return: Exit(1) on failure, None on success
+    '''
+    if not os.path.isdir(dir_path):
+        try:
+            os.mkdir(dir_path)
+        except:
+            print '[ERROR] Problem creating ',dir_path
+            sys.exit(1)
 
 
 

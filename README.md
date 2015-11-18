@@ -13,7 +13,7 @@ TODO:
 * Init spatial parameters 
  - define geotransforms for:
   + [x] Source (srb, WGS84 lo res)
-  + [ ] Intermediate, WGS84 high res
+  + [x] Intermediate, WGS84 high res
   + [x] Output, from DEM (must be rectilinear/slope- & aspect-able
 
 * Init temporal parameters?

@@ -10,12 +10,10 @@ Directions for use:
 4. run $ python start_project.py prjName
 
 TODO:
-* Prepare DEM derivatives:
- - Slope and Aspect (gdaldem slope, gdaldem aspect -zero_when_flat)
-  + [x] gdaldem slope, gdaldem aspect -zero_for_flat
- - Lat and Lon
-  + [x]  Should be a simple function based on geotransforms 
- - Sunview and Skyview 
+* Check extents of DEM derivatives:
+ - [ ] Slope and Aspect 
+ - [ ] Lat and Lon
+* Produce Sunview and Skyview 
   + [ ]  Binary Obstruction Grids (no obstruction when solar zenith is higher than max slope angle)
   + [ ]  accumulate Skyview
   + [ ]  pre-stack a year's worth of 3hr Sunview grids, or just save them if they aren't saved yet?

@@ -30,7 +30,7 @@ norway1km:
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /home/sl_wib/itopo/data/gtopo30arcsec_norway.tif
     srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
-    itopo_dir: /home/sl_wib/itopo/norway1km/
+    itopo_dir: /home/sl_wib/ITopo/norway1km/
 
     ### DEFINE SPATIAL EXTENTS ###
     # If epsg does not match src_dem, gdalwarp might reproject src_dem to produce aoi dem
@@ -55,7 +55,7 @@ gjende100m:
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /home/sl_wib/itopo/data/gtopo30arcsec_norway.tif
     srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
-    itopo_dir: /home/sl_wib/itopo/gjende/
+    itopo_dir: /home/sl_wib/ITopo/gjende/
 
     ### DEFINE SPATIAL EXTENTS ###
     # 61.4894° N, 8.6800° E

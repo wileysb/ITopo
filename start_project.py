@@ -1,30 +1,24 @@
 #!/usr/bin/python
 '''
-TODO:
 * Init Paths
  - path to DEM
- - DEM derivatives directory (default DEM directory)
+ - DEM derivatives directory
  - SRB directory
- - temporary timestep and processing output directory
-
+ - temporary timestep and processing directory
 * Init spatial parameters
- - define geotransforms for:
-  + [x] Source (srb, WGS84 lo res)
-  + [x] Intermediate, WGS84 high res
-  + [x] Output, from DEM (must be rectilinear/slope- & aspect-able
-
-* Init temporal parameters?
- - months and years to cover?  default 1984-2007, all 12 months? Possibly useful to run 'just April and June' or something?
-
-* Prepare DEM derivatives:
- - Slope and Aspect (gdaldem slope, gdaldem aspect -zero_when_flat)
-  + [x] gdaldem slope, gdaldem aspect -zero_for_flat
+ - Define geotransforms for:
+ -- Source(srb,WGS84 lo res)
+ -- Intermediate, wGS84 high res
+ -- Output, rectilinear projection from DEM
+* Init Temporal Parameters
+ -define start:end years and months to iterate over
+* Prepare DEM derivatives
+ - Slope and Aspect
  - Lat and Lon
-  + [ ]  Should be a simple function based on geotransforms
- - Sunview and Skyview
-  + [ ]  Binary Obstruction Grids (no obstruction when solar zenith is higher than max slope angle)
-  + [ ]  accumulate Skyview
-  + [ ]  pre-stack a year's worth of 3hr Sunview grids, or just save them if they aren't saved yet?
+ -Sunview and Skyview
+ -- Binary Obstruction Grids
+ -- accumulate skyview
+ -- pre-stack a year's worth of 3hr sunview grids, or just save them if they aren't saved yet?
 '''
 __author__ = 'Wiley Bogren'
 

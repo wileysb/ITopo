@@ -5,7 +5,8 @@ __author__ = 'Wiley Bogren'
 import os
 import sys
 import yaml
-from topocorr_funcs import Prj_mkdir, Define_grid, Snap_extents_to_grid, Get_gt_dict
+import numpy as np
+from topocorr_funcs import Prj_mkdir, Get_gt_dict
 
 prj_name = sys.argv[1] # $ python start_project.py prjName
 prj_param_fn = '{}_parameters.yaml'.format(prj_name)
@@ -33,9 +34,8 @@ else:
         ### Clip DEM ###
         prj['dem'] = os.path.join(prj['dem_dir'],prj_name+'_dem.tif')
         if not os.path.isfile(prj['dem']):
-            dem_x, dem_y = Define_grid(prj['src_dem'])
-            # prj['xmin'], prj['ymin'],prj['xmax'],prj['ymax'] = Snap_extents_to_grid(dem_x,dem_y,prj['xmin'], prj['ymin'],prj['xmax'],prj['ymax'])
-            gdalwarp_cmd = 'gdalwarp -te {1} {2} {3} {4} -r cubic -of GTiff {5} {6}'.format(prj['epsg'],
+            gdalwarp_cmd = 'gdalwarp -t_srs "EPSG:{0}" -tr {1} {2} -te {3} {4} {5} {6} -r cubic -of GTiff {7} {8}'.format(
+                            prj['epsg'],prj['dx'],np.abs(prj['dy']),
                             prj['xmin'],prj['ymin'],prj['xmax'],prj['ymax'],
                             prj['src_dem'],prj['dem'])
             prj['init_cmds'].append(gdalwarp_cmd)

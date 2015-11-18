@@ -985,6 +985,7 @@ def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, epsg, out_ds):
 
     gdal_save_grid(**gdal_args)
     gdal_args['from_dset'] , gdal_args['outfn'] = latv,out_ds+'_lat.tif'
+    gdal_save_grid(**gdal_args)
     #np.savetxt(out_ds+'_lon.asc',lonv) #/home/wiley/wrk/ryan/dem_dir/lon_utm33n.asc',np.flipud(lonv))
     #np.savetxt(out_ds+'_lat.asc',latv) #'/home/wiley/wrk/ryan/dem_dir/lat_utm33n.asc',np.flipud(latv))
 

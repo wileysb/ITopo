@@ -138,7 +138,7 @@ else:
         #mk_latlon_grids(ncols,nrows,xll,yll,cellsize, out_ds)
         latlon_args = {
                         'ncols': prj['x_size'],'nrows':prj['y_size'],
-                        'ulx':prj['ulx'],'uly':prj['uly'],
+                        'ulx':prj['xmin'],'uly':prj['ymax'],
                         'cellsize':prj['dx'],'out_ds':os.path.join(prj['dem_dir'],prj_name)}
         mk_latlon_grids(**latlon_args)
 

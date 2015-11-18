@@ -57,6 +57,8 @@ else:
         prj['dem'] = os.path.join(prj['dem_dir'],prj_name+'_dem.tif')
         if os.path.isfile(prj['dem']):
             prj['dem_gt']   = Get_gt_dict(prj['dem'])
+            prj['x_size'] = prj['dem_gt']['x_size']
+            prj['y_size'] = prj['dem_gt']['y_size']
             prj['epsg'] =  prj['dem_gt']['epsg']
             prj['dx'] = prj['dem_gt']['dx']
             prj['dy']= prj['dem_gt']['dy']
@@ -84,18 +86,11 @@ else:
             print cmd
             ret = os.system(cmd)
 
-        prj['lat'] = os.path.join(prj['dem_dir'],prj_name+'_lat.tif')
-        prj['lon'] = os.path.join(prj['dem_dir'],prj_name+'_lon.tif')
-        #mk_latlon_grids(ncols,nrows,xll,yll,cellsize, out_ds)
-        latlon_args = {
-                        'ncols': prj['x_size'],'nrows':prj['y_size'],
-                        'ulx':prj['ulx'],'uly':prj['uly'],
-                        'cellsize':prj['dx'],'out_ds':os.path.join(prj['dem_dir'],prj_name)}
-        mk_latlon_grids(**latlon_args)
-
         ###  DEFINE GEOTRANSFORMS
         if not 'dem_gt' in prj.keys():
             prj['dem_gt']   = Get_gt_dict(prj['dem'])
+            prj['x_size'] = prj['dem_gt']['x_size']
+            prj['y_size'] = prj['dem_gt']['y_size']
         # todo NOTE:
         #  in the hardcoded utm33n_md, 'ulx' and 'uly' off by 500m (pixel corners vs pixel center)
         #   'ulx':-84500.00 hardcoded, vs  -85000.0  from function
@@ -136,6 +131,16 @@ else:
         prj['srb_hi_gt']['dy'] = float(prj['srb_gt']['dy'])/prj['srb_zoom_factor']  # 1 / 120 = 0.008333
         prj['srb_hi_gt']['x_size'] = prj['srb_gt']['x_size'] * prj['srb_zoom_factor']
         prj['srb_hi_gt']['y_size'] = prj['srb_gt']['y_size'] * prj['srb_zoom_factor']
+
+        # Make latlon
+        prj['lat'] = os.path.join(prj['dem_dir'],prj_name+'_lat.tif')
+        prj['lon'] = os.path.join(prj['dem_dir'],prj_name+'_lon.tif')
+        #mk_latlon_grids(ncols,nrows,xll,yll,cellsize, out_ds)
+        latlon_args = {
+                        'ncols': prj['x_size'],'nrows':prj['y_size'],
+                        'ulx':prj['ulx'],'uly':prj['uly'],
+                        'cellsize':prj['dx'],'out_ds':os.path.join(prj['dem_dir'],prj_name)}
+        mk_latlon_grids(**latlon_args)
 
         with file(prj_param_fn,'w') as f:
                 yaml.safe_dump(prj,f)

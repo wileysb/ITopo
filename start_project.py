@@ -36,7 +36,7 @@ if not os.path.isfile(prj_param_fn.format(prj_name)):
             gdalwarp_cmd = 'gdalwarp -te {1} {2} {3} {4} -r cubic -of GTiff {5} {6}'.format(prj['epsg'],
                             prj['xmin'],prj['ymin'],prj['xmax'],prj['ymax'],
                             prj['src_dem'],prj['dem'])
-            prj['dem_cmds'].append(gdalwarp_cmd)
+            prj['init_cmds'].append(gdalwarp_cmd)
         else:
             prj['epsg'] = Get_gt_dict(prj['dem']['epsg'])
             # set xmin,ymin,xmax,ymax,dx,dy from same
@@ -76,8 +76,8 @@ if not os.path.isfile(prj_param_fn.format(prj_name)):
 
         ### DEFINE SETUP COMMANDS
 
-        prj['dem_cmds'].append(slp_cmd)
-        prj['dem_cmds'].append(asp_cmd)
+        prj['init_cmds'].append(slp_cmd)
+        prj['init_cmds'].append(asp_cmd)
 
         with file(prj_param_fn,'w') as f:
             yaml.safe_dump(prj,f)

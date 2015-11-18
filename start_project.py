@@ -34,14 +34,22 @@ else:
 
         ### Clip DEM ###
         prj['dem'] = os.path.join(prj['dem_dir'],prj_name+'_dem.tif')
-        if not os.path.isfile(prj['dem']):
+        if os.path.isfile(prj['dem']):
+            prj['dem_gt']   = Get_gt_dict(prj['dem'])
+            prj['epsg'] =  prj['dem_gt']['epsg']
+            prj['dx'] = prj['dem_gt']['dx']
+            prj['dy']= prj['dem_gt']['dy']
+            prj['xmin']= prj['dem_gt']['ulx']
+            prj['ymax']= prj['dem_gt']['uly']
+            prj['ymin']= prj['ymax'] + prj['dy']*prj['dem_gt']['y_size']
+            prj['xmax']= prj['xmin'] + prj['dx']*prj['dem_gt']['x_size']
+        else:
             gdalwarp_cmd = 'gdalwarp -t_srs "EPSG:{0}" -tr {1} {2} -te {3} {4} {5} {6} -r cubic -of GTiff {7} {8}'.format(
                             prj['epsg'],prj['dx'],np.abs(prj['dy']),
                             prj['xmin'],prj['ymin'],prj['xmax'],prj['ymax'],
                             prj['src_dem'],prj['dem'])
             prj['init_cmds'].append(gdalwarp_cmd)
-        else:
-            prj['epsg'] = Get_gt_dict(prj['dem']['epsg'])
+
             # set xmin,ymin,xmax,ymax,dx,dy from same
         # Slope and Aspect
         prj['asp'] = os.path.join(prj['dem_dir'],prj_name+'_asp.tif')
@@ -56,7 +64,8 @@ else:
             ret = os.system(cmd)
 
         ###  DEFINE GEOTRANSFORMS
-        prj['dem_gt']   = Get_gt_dict(prj['dem'])
+        if not 'dem_gt' in prj.keys():
+            prj['dem_gt']   = Get_gt_dict(prj['dem'])
         # todo NOTE:
         #  in the hardcoded utm33n_md, 'ulx' and 'uly' off by 500m (pixel corners vs pixel center)
         #   'ulx':-84500.00 hardcoded, vs  -85000.0  from function
@@ -75,8 +84,8 @@ else:
         srb_xmax = math.ceil(srb_xmax)
 
         srb_ulx, srb_uly = srb_xmin,srb_ymax
-        srb_x_size = srb_xmax - srb_xmin
-        srb_y_size = srb_ymax - srb_ymin
+        srb_x_size = int((srb_xmax - srb_xmin) / prj['dx'])
+        srb_y_size = int((srb_ymax - srb_ymin)/ prj['dy'])
 
         # If the input radiation is anything but srb, lots more will have to be recoded
         prj['srb_gt'] =     { 'outfn': 'MEM',  # wgs84lo

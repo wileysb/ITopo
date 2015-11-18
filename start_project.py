@@ -32,9 +32,10 @@ else:
 
         prj['init_cmds'] = []
 
-        print prj
+
         ### Clip DEM ###
         prj['dem'] = os.path.join(prj['dem_dir'],prj_name+'_dem.tif')
+        print prj
         if os.path.isfile(prj['dem']):
             prj['dem_gt']   = Get_gt_dict(prj['dem'])
             prj['epsg'] =  prj['dem_gt']['epsg']

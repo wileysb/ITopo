@@ -140,6 +140,7 @@ else:
                         'ncols': prj['x_size'],'nrows':prj['y_size'],
                         'ulx':prj['xmin'],'uly':prj['ymax'],
                         'cellsize':prj['dx'],'out_ds':os.path.join(prj['dem_dir'],prj_name)}
+        print 'Making Lat and Lon grids in output projection . . .'
         mk_latlon_grids(**latlon_args)
 
         with file(prj_param_fn,'w') as f:

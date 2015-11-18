@@ -28,7 +28,7 @@ example:
 norway1km:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
-    src_dem: /home/sl_wib/itopo/data/gtopo30arcsec_norway.tif
+    src_dem: /home/sl_wib/itopo/data/dted10utm33.vrt
     srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
     itopo_dir: /home/sl_wib/ITopo/norway1km/
 
@@ -53,7 +53,7 @@ norway1km:
 gjende100m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
-    src_dem: /home/sl_wib/itopo/data/gtopo30arcsec_norway.tif
+    src_dem: /home/sl_wib/itopo/data/dted10utm33.vrt
     srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
     itopo_dir: /home/sl_wib/ITopo/gjende/
 

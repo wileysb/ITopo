@@ -10,7 +10,8 @@ Directions for use:
 4. run $ python start_project.py prjName
 
 TODO:
-* Check extents of DEM derivatives:
+* Check extents and alignment of DEM & derivatives:
+ - [ ] AOI DEM
  - [ ] Slope and Aspect 
  - [ ] Lat and Lon
 * Produce Sunview and Skyview 

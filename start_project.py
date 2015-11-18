@@ -24,6 +24,7 @@ else:
 
         ### CREATE DIRS, IF NECESSARY
         Prj_mkdir(prj['itopo_dir'])
+        Prj_mkdir(prj['tmp_dir'])
         Prj_mkdir(prj['dem_dir'])
         Prj_mkdir(prj['BOG_dir'])
 
@@ -46,17 +47,12 @@ else:
         prj['slp'] = os.path.join(prj['dem_dir'],prj_name+'_slp.tif')
         slp_cmd = 'gdaldem slope {0} {1}'.format(prj['dem'],prj['slp'])
         asp_cmd = 'gdaldem aspect -zero_for_flat {0} {1}'.format(prj['dem'],prj['asp'])
-
-        ### DEFINE SETUP COMMANDS
         prj['init_cmds'].append(slp_cmd)
         prj['init_cmds'].append(asp_cmd)
 
-        with file(prj_param_fn,'w') as f:
-                yaml.safe_dump(prj,f)
-    else:
-        print prj_name,'not found in parameters.yaml'
+        for cmd in prj['init_cmds']:
+            ret = os.system(cmd)
 
-secondFile = '''
         ###  DEFINE GEOTRANSFORMS
         prj['dem_gt']   = Get_gt_dict(prj['dem'])
         # NOTE:
@@ -83,6 +79,11 @@ secondFile = '''
         prj['srb_hi_gt']['dy'] = float(prj['srb_gt']['dy'])/prj['srb_zoom_factor']  # 1 / 120 = 0.008333
         prj['srb_hi_gt']['x_size'] = 0  # 'x_size':srb_gt['x_size']*120 todo solve
         prj['srb_hi_gt']['y_size'] = 0  # 'y_size':srb_gt['y_size']*120 todo solve
-'''
+
+        with file(prj_param_fn,'w') as f:
+                yaml.safe_dump(prj,f)
+    else:
+        print prj_name,'not found in parameters.yaml'
+
 
 

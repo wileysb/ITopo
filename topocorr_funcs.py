@@ -964,6 +964,26 @@ def t_xy(t,x,y):
     return point.GetX(), point.GetY()
 
 
+
+def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, out_ds):
+
+    nortings  = (uly - cellsize/2.) - cellsize*(np.arange(nrows))
+    eastings  = (ulx + cellsize/2.) + cellsize*(np.arange(ncols))
+
+    lonv, latv = np.meshgrid(eastings, nortings[::-1])
+
+    t = transform_utm33n2geog()
+
+    for i in range(len(eastings)):
+        for j in range(len(nortings)):
+            lonX, latY = t_xy(t,eastings[i],nortings[j])
+            lonv[j,i]=lonX
+            latv[j,i]=latY
+
+    np.savetxt(out_ds+'_lon.asc',lonv) #/home/wiley/wrk/ryan/dem_dir/lon_utm33n.asc',np.flipud(lonv))
+    np.savetxt(out_ds+'_lat.asc',latv) #'/home/wiley/wrk/ryan/dem_dir/lat_utm33n.asc',np.flipud(latv))
+
+
 def mk_utm33_latlon():
     '''Check these by converting to tifs and loading into scene with projection set to geog'''
     ncols    = 1210
@@ -977,7 +997,7 @@ def mk_utm33_latlon():
 
     lonv, latv = np.meshgrid(eastings, nortings[::-1])
 
-    t = transform_utm2geog()
+    t = transform_utm33n2geog()
         
     for i in range(len(eastings)):
         for j in range(len(nortings)):

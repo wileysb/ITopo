@@ -1,5 +1,31 @@
 #!/usr/bin/python
+'''
+TODO:
+* Init Paths
+ - path to DEM
+ - DEM derivatives directory (default DEM directory)
+ - SRB directory
+ - temporary timestep and processing output directory
 
+* Init spatial parameters
+ - define geotransforms for:
+  + [x] Source (srb, WGS84 lo res)
+  + [x] Intermediate, WGS84 high res
+  + [x] Output, from DEM (must be rectilinear/slope- & aspect-able
+
+* Init temporal parameters?
+ - months and years to cover?  default 1984-2007, all 12 months? Possibly useful to run 'just April and June' or something?
+
+* Prepare DEM derivatives:
+ - Slope and Aspect (gdaldem slope, gdaldem aspect -zero_when_flat)
+  + [x] gdaldem slope, gdaldem aspect -zero_for_flat
+ - Lat and Lon
+  + [ ]  Should be a simple function based on geotransforms
+ - Sunview and Skyview
+  + [ ]  Binary Obstruction Grids (no obstruction when solar zenith is higher than max slope angle)
+  + [ ]  accumulate Skyview
+  + [ ]  pre-stack a year's worth of 3hr Sunview grids, or just save them if they aren't saved yet?
+'''
 __author__ = 'Wiley Bogren'
 
 import os
@@ -7,7 +33,7 @@ import sys
 import yaml
 import math
 import numpy as np
-from topocorr_funcs import Prj_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy
+from topocorr_funcs import Prj_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy, mk_latlon_grids
 
 prj_name = sys.argv[1] # $ python start_project.py prjName
 prj_param_fn = '{}_parameters.yaml'.format(prj_name)
@@ -63,6 +89,15 @@ else:
         for cmd in prj['init_cmds']:
             print cmd
             ret = os.system(cmd)
+
+        prj['lat'] = os.path.join(prj['dem_dir'],prj_name+'_lat.tif')
+        prj['lon'] = os.path.join(prj['dem_dir'],prj_name+'_lon.tif')
+        #mk_latlon_grids(ncols,nrows,xll,yll,cellsize, out_ds)
+        latlon_args = {
+                        'ncols': prj['x_size'],'nrows':prj['y_size'],
+                        'ulx':prj['ulx'],'uly':prj['uly'],
+                        'cellsize':prj['dx'],'out_ds':os.path.join(prj['dem_dir'],prj_name)}
+        mk_latlon_grids(**latlon_args)
 
         ###  DEFINE GEOTRANSFORMS
         if not 'dem_gt' in prj.keys():

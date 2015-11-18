@@ -3,22 +3,13 @@ Topographic correction of irradiance.
 Trying to make the code more streamlined and flexible, rather than locked 
 in extent and resolution.
 
+Directions for use:
+1) Clone ITopo project to a disk with plenty of space
+2) Create 'prjName' directory within ITopo/
+3) Define 'prjName' parameters in parameters.yaml
+4) run $ python start_project.py prjName
+
 TODO:
-* Init Paths
- - path to DEM
- - DEM derivatives directory (default DEM directory)
- - SRB directory
- - temporary timestep and processing output directory
-
-* Init spatial parameters 
- - define geotransforms for:
-  + [x] Source (srb, WGS84 lo res)
-  + [x] Intermediate, WGS84 high res
-  + [x] Output, from DEM (must be rectilinear/slope- & aspect-able
-
-* Init temporal parameters?
- - months and years to cover?  default 1984-2007, all 12 months? Possibly useful to run 'just April and June' or something?  
-
 * Prepare DEM derivatives:
  - Slope and Aspect (gdaldem slope, gdaldem aspect -zero_when_flat)
   + [x] gdaldem slope, gdaldem aspect -zero_for_flat

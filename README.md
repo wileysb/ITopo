@@ -14,7 +14,7 @@ TODO:
  - Slope and Aspect (gdaldem slope, gdaldem aspect -zero_when_flat)
   + [x] gdaldem slope, gdaldem aspect -zero_for_flat
  - Lat and Lon
-  + [ ]  Should be a simple function based on geotransforms 
+  + [x]  Should be a simple function based on geotransforms 
  - Sunview and Skyview 
   + [ ]  Binary Obstruction Grids (no obstruction when solar zenith is higher than max slope angle)
   + [ ]  accumulate Skyview

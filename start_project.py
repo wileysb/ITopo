@@ -11,11 +11,11 @@
  -- Intermediate, wGS84 high res
  -- Output, rectilinear projection from DEM
 * Init Temporal Parameters
- -define start:end years and months to iterate over
+ - define start:end years and months to iterate over
 * Prepare DEM derivatives
  - Slope and Aspect
  - Lat and Lon
- -Sunview and Skyview
+ - Sunview and Skyview
  -- Binary Obstruction Grids
  -- accumulate skyview
  -- pre-stack a year's worth of 3hr sunview grids, or just save them if they aren't saved yet?

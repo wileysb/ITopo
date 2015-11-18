@@ -75,3 +75,29 @@ gjende100m:
     first_year: 1997
     last_year: 2002
 ########################################################################################################################
+
+
+### PROJECT NAME ###
+gtopo30norway1km:
+
+    ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
+    src_dem: /home/sl_wib/ITopo/data/gtopo30arcsec_norway.tif
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    itopo_dir: /home/sl_wib/ITopo/norway1kmLegacy/
+
+    ### DEFINE SPATIAL EXTENTS ###
+    # If epsg does not match src_dem, gdalwarp might reproject src_dem to produce aoi dem
+    # If EPSG is not given, it is derived from src_dem.
+    #epsg:   32633 # EPSG code for AOI projection. if prj_dem exists, this param value will be ignored
+    #dx:      1000 # E-W Resolution of prj_dem and output. if prj_dem exists, this param value will be ignored
+    #dy:     -1000 # (negative) N-S Resolution of prj_dem and output. if prj_dem exists, this param value will be ignored
+    #min:  -85000 # easting of AOI's left edge, if prj_dem exists, this param value will be ignored
+    #ymin: 6430000 # northing of AOI's bottom edge, if prj_dem exists, this param value will be ignored
+    #xmax: 1125000 # easting of AOI's right edge, if prj_dem exists, this param value will be ignored
+    #ymax: 7962000 # northing of AOI's top edge, if prj_dem exists, this param value will be ignored
+
+    ### TEMPORAL RANGE ###
+    months: 01 02 03 04 05 06 07 08 09 10 11 12
+    first_year: 1997
+    last_year: 2002
+########################################################################################################################

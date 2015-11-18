@@ -73,7 +73,6 @@ else:
 
         # Get srb bounding ulx and uly + x_size, y_size
          # This is only OK as long as corners from prj_extents form geographic max + min values
-        print 'Transforming EPSG',prj['epsg'],'to',4326
         t = transform_epsg2epsg(int(prj['epsg']),4326)
         srb_xmin,srb_ymax = t_xy(t,prj['xmin'],prj['ymax'])
         srb_xmax,srb_ymin = t_xy(t,prj['xmax'],prj['ymin'])

@@ -926,8 +926,20 @@ def Snap_extents_to_grid(grid_x,grid_y,fxmin,fymin,fxmax,fymax):
         return 'SNAP_TO_GRID ERROR'
 
 
+def transform_epsg2epsg(src_epsg,dst_epsg):
+    '''t = transform_epsg2epsg(src_epsg,dst_epsg)
+    Both src_epsg and dst_epsg should be a valid integer Authority Code identifying a unique coordinate reference system'''
+    src = osr.SpatialReference()
+    src.ImportFromEPSG(src_epsg)
 
-def transform_utm2geog():
+    dst = osr.SpatialReference()
+    dst.ImportFromEPSG(dst_epsg)
+
+    t = osr.CoordinateTransformation(src,dst)
+    return t
+
+
+def transform_utm33n2geog():
     wgs84 = osr.SpatialReference()
     wgs84.ImportFromEPSG(4326)
 

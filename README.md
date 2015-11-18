@@ -4,10 +4,10 @@ Trying to make the code more streamlined and flexible, rather than locked
 in extent and resolution.
 
 Directions for use:
-1) Clone ITopo project to a disk with plenty of space
-2) Create 'prjName' directory within ITopo/
-3) Define 'prjName' parameters in parameters.yaml
-4) run $ python start_project.py prjName
+1. Clone ITopo project to a disk with plenty of space
+2. Create 'prjName' directory within ITopo/
+3. Define 'prjName' parameters in parameters.yaml
+4. run $ python start_project.py prjName
 
 TODO:
 * Prepare DEM derivatives:

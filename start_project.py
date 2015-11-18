@@ -32,6 +32,7 @@ else:
 
         prj['init_cmds'] = []
 
+        print prj
         ### Clip DEM ###
         prj['dem'] = os.path.join(prj['dem_dir'],prj_name+'_dem.tif')
         if os.path.isfile(prj['dem']):

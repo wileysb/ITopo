@@ -649,7 +649,7 @@ def Get_gt_dict(ras_fn):
     srs_epsg = srs.GetAuthorityCode(None)
     gt = ds.GetGeoTransform()
 
-    gt_dict = {'epsg':srs_epsg,
+    gt_dict = {'epsg':int(srs_epsg),
                 'x_size': ds.RasterXSize,
                 'y_size': ds.RasterYSize,
                 'dx':gt[1],
@@ -965,7 +965,7 @@ def t_xy(t,x,y):
 
 
 
-def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, out_ds):
+def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, epsg, out_ds):
 
     nortings  = (uly - cellsize/2.) - cellsize*(np.arange(nrows))
     eastings  = (ulx + cellsize/2.) + cellsize*(np.arange(ncols))
@@ -980,8 +980,14 @@ def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, out_ds):
             lonv[j,i]=lonX
             latv[j,i]=latY
 
-    np.savetxt(out_ds+'_lon.asc',lonv) #/home/wiley/wrk/ryan/dem_dir/lon_utm33n.asc',np.flipud(lonv))
-    np.savetxt(out_ds+'_lat.asc',latv) #'/home/wiley/wrk/ryan/dem_dir/lat_utm33n.asc',np.flipud(latv))
+    gdal_args = {'from_dset':lonv, 'outfn':out_ds+'_lon.tif', 'epsg':epsg,
+                 'x_size':ncols, 'y_size':nrows, 'ulx':ulx, 'uly':uly, 'dx':cellsize, 'dy':-1*cellsize}
+
+    gdal_save_grid(**gdal_args)
+    gdal_args['from_dset'] , gdal_args['outfn'] = latv,out_ds+'_lat.tif'
+    #np.savetxt(out_ds+'_lon.asc',lonv) #/home/wiley/wrk/ryan/dem_dir/lon_utm33n.asc',np.flipud(lonv))
+    #np.savetxt(out_ds+'_lat.asc',latv) #'/home/wiley/wrk/ryan/dem_dir/lat_utm33n.asc',np.flipud(latv))
+
 
 
 def mk_utm33_latlon():

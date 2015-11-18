@@ -66,8 +66,7 @@ if not os.path.isfile(prj_param_fn.format(prj_name)):
                               'uly': 72.5} # todo set from minimum bounding extent around AOI
 
         # 1 degree = 3600 arc seconds.  1 arc second ~ 30m. 1000m output used 30 arc seconds = zoom 120
-        prj['srb_zoom_factor'] = 108000 / prj['dem_gt']['dx']
-
+        prj['srb_zoom_factor'] = int(108000 / prj['dem_gt']['dx'])
         prj['srb_hi_gt'] = prj['srb_gt'].copy()
 
         prj['srb_hi_gt']['dx'] = float(prj['srb_gt']['dx'])/prj['srb_zoom_factor']  # 1 / 120 = 0.008333

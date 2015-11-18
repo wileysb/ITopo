@@ -10,8 +10,9 @@ from topocorr_funcs import Prj_mkdir, Define_grid, Snap_extents_to_grid, Get_gt_
 prj_name = sys.argv[1] # $ python start_project.py prjName
 prj_param_fn = '{}_parameters.yaml'.format(prj_name)
 
-
-if not os.path.isfile(prj_param_fn.format(prj_name)):
+if os.path.isfile(prj_param_fn.format(prj_name)):
+    print prj_param_fn.format(prj_name), 'exists.  To start over, delete or rename the existing file.'
+else:
     ### LOAD PROJECT PARAMETERS ###
     with file('parameters.yaml','r') as f:
         parameters = yaml.safe_load(f)
@@ -46,7 +47,16 @@ if not os.path.isfile(prj_param_fn.format(prj_name)):
         slp_cmd = 'gdaldem slope {0} {1}'.format(prj['dem'],prj['slp'])
         asp_cmd = 'gdaldem aspect -zero_for_flat {0} {1}'.format(prj['dem'],prj['asp'])
 
+        ### DEFINE SETUP COMMANDS
+        prj['init_cmds'].append(slp_cmd)
+        prj['init_cmds'].append(asp_cmd)
 
+        with file(prj_param_fn,'w') as f:
+                yaml.safe_dump(prj,f)
+    else:
+        print prj_name,'not found in parameters.yaml'
+
+secondFile = '''
         ###  DEFINE GEOTRANSFORMS
         prj['dem_gt']   = Get_gt_dict(prj['dem'])
         # NOTE:
@@ -73,13 +83,6 @@ if not os.path.isfile(prj_param_fn.format(prj_name)):
         prj['srb_hi_gt']['dy'] = float(prj['srb_gt']['dy'])/prj['srb_zoom_factor']  # 1 / 120 = 0.008333
         prj['srb_hi_gt']['x_size'] = 0  # 'x_size':srb_gt['x_size']*120 todo solve
         prj['srb_hi_gt']['y_size'] = 0  # 'y_size':srb_gt['y_size']*120 todo solve
+'''
 
-        ### DEFINE SETUP COMMANDS
 
-        prj['init_cmds'].append(slp_cmd)
-        prj['init_cmds'].append(asp_cmd)
-
-        with file(prj_param_fn,'w') as f:
-            yaml.safe_dump(prj,f)
-    else:
-        print prj_name,'not found in parameters.yaml'

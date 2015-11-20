@@ -8,6 +8,7 @@ Directions for use:
 2. Create 'prjName' directory within ITopo/
 3. Define 'prjName' parameters in parameters.yaml
 4. run $ python start_project.py prjName
+5. run $ parallel -j numThreads -- < prjDir/BOG.cmds
 
 TODO:
 * Move cmd lists into the project folders

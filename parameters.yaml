@@ -158,7 +158,7 @@ porsgrunn100m:
 
 
 ### PROJECT NAME ###
-porsgrunn100m:
+porsgrunn1000m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /space/dems/dted10/6805_4_10m_z32.dem

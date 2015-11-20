@@ -964,7 +964,6 @@ def t_xy(t,x,y):
     return point.GetX(), point.GetY()
 
 
-
 def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, epsg, out_ds):
 
     nortings  = (uly - cellsize/2.) - cellsize*(np.arange(nrows))
@@ -988,7 +987,6 @@ def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, epsg, out_ds):
     gdal_save_grid(**gdal_args)
     #np.savetxt(out_ds+'_lon.asc',lonv) #/home/wiley/wrk/ryan/dem_dir/lon_utm33n.asc',np.flipud(lonv))
     #np.savetxt(out_ds+'_lat.asc',latv) #'/home/wiley/wrk/ryan/dem_dir/lat_utm33n.asc',np.flipud(latv))
-
 
 
 def mk_utm33_latlon():

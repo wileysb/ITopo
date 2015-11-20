@@ -17,16 +17,16 @@ import sys
 if len(sys.argv)==1:
     sz_start=0
     sz_end=90
-    out_fn='/home/sl_wib/skyview.asc'
+    out_fn='/home/sl_wib/skyview.asc' # todo has to go into dem_derivs folder
 elif len(sys.argv)==2:
     sz_start=int(sys.argv[1])
     sz_end=sz_start+1
-    out_fmt = '/home/sl_wib/skyview_{}zen_{}max.asc'
+    out_fmt = '/home/sl_wib/skyview_{}zen_{}max.asc' #.format(zen,max) todo has to go into tmp folder
 
 # define locations
-out_fn = '/home/sl_wib/skyview_{}.asc' # We can manually add the header later to make it a proper ascii grid
-shade_dir = '/home/sl_wib/shade/'
-shade_fmt = os.path.join(shade_dir,'solaraz{}solarzen{}.asc')#.format(sol_az,sol_zen)
+#out_fn = '/home/sl_wib/skyview_{}.asc' # We can manually add the header later to make it a proper ascii grid
+shade_dir = '/home/sl_wib/shade/' # todo load path from yaml
+shade_fmt = os.path.join(shade_dir,'solaraz{}solarzen{}.asc')#.format(sol_az,sol_zen) todo load path from yaml
 
 # create max_sum counter
 max_sum = 0

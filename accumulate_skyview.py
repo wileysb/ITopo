@@ -10,10 +10,51 @@ by cosine(90-zenith) to account for smaller sectors per degree
 as zenith angle approaches noon. This weighted sum, divided by 
 the maximum possible sum, gives the % sky viewable from each point in the grid'''
 
+import yaml
 import numpy as np
 import os
 import sys
+import subprocess
 
+
+def sum_zen_ring(zen,gridmap):
+    skyview = np.zeros_like(shade1)
+    zen_weight = np.cos(np.deg2rad(90-sol_zen))
+    max_sum = 360*zen_weight
+    for az in range(360):
+        shade = np.loadtxt(prj['BOG'].format(az,zen),skiprows=6,delimiter=' ')
+        skyview+=shade*zen_weight
+    return skyview,max_sum
+
+prj_name = sys.argv[1] # $ python start_project.py prjName
+
+prj_param_fn = '{}_parameters.yaml'.format(prj_name)
+with file(prj_param_fn) as f:
+    prj = yaml.safe_load(f)
+
+
+if len(sys.argv) == 2:
+    numThreads = sys.argv[2]
+    # subprocess through the zen rings, write to zen_ring_grids, then accumulate all rings to skyview.
+else:
+    numThreads = None
+    outfn = os.path.join(prj['dem_dir'],prj_name + '_skyview.asc')
+    for zen in range(0,90):
+        if zen > 90-prj['steepest_slope']:
+            zen_weight = np.cos(np.deg2rad(90-zen))
+            BOG_ring = np.ones*360*zen_weight
+        else:
+            load BOG
+
+
+    # Just loop through the rings within single thread, and write out to skyview (gdal save grid??)
+
+
+
+# prj['BOG'] = os.path.join(prj['BOG_dir'],'az{0}zen{1}.asc') #.format(solar_az,solar_zen)
+# Above prj['steepest_slope'], BOG = np.ones, or np.zeroes, whichever means no obstructions
+
+extinct = '''
 if len(sys.argv)==1:
     sz_start=0
     sz_end=90
@@ -27,6 +68,7 @@ elif len(sys.argv)==2:
 #out_fn = '/home/sl_wib/skyview_{}.asc' # We can manually add the header later to make it a proper ascii grid
 shade_dir = '/home/sl_wib/shade/' # todo load path from yaml
 shade_fmt = os.path.join(shade_dir,'solaraz{}solarzen{}.asc')#.format(sol_az,sol_zen) todo load path from yaml
+'''
 
 # create max_sum counter
 max_sum = 0

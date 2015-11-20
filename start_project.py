@@ -90,6 +90,13 @@ else:
 
         slope = gdal_load(prj['slp'])
         prj['steepest_slope'] = math.ceil(np.nanmax(slope))
+        bog_cmd_list = []
+        for az in range(0,360):
+            for zen in range(90-prj['steepest_slope'], 90):
+                outfn = prj['BOG'].format(az,zen)
+                bog_cmd_list.append("Rscript mk_shade_grid.R {0} {1} {2} {3}\n".format(prj['dem'],zen, az, outfn))
+        with open(os.path.join(prj['itopo_dir'],'BOG.cmds'),'w') as bog_cmds:
+            bog_cmds.writelines(bog_cmd_list)
 
         ###  DEFINE GEOTRANSFORMS
         if not 'dem_gt' in prj.keys():

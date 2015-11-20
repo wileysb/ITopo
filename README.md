@@ -10,10 +10,8 @@ Directions for use:
 4. run $ python start_project.py prjName
 
 TODO:
-* Check extents and alignment of DEM & derivatives:
- - [ ] AOI DEM
- - [ ] Slope and Aspect 
- - [ ] Lat and Lon
+* Move cmd lists into the project folders
+  + Maybe params can stay in the functions folder though?
 * Produce Sunview and Skyview 
   + [ ]  Binary Obstruction Grids (no obstruction when solar zenith is higher than max slope angle)
   + [ ]  accumulate Skyview

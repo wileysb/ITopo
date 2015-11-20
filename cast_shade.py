@@ -10,18 +10,17 @@
       Rscript mk_shade_grid.R prj_dem.tif zenith azimuth outfile.asc (tif possible??)
 '''
 
-import os
 import sys
 import yaml
-import math
-import numpy as np
-
-from topocorr_funcs import gdal_load
 
 prj_name = sys.argv[1] # $ python start_project.py prjName
+numThreads = int(sys.argv[2])
 prj_param_fn = '{}_parameters.yaml'.format(prj_name)
 
 with file(prj_param_fn,'r') as f:
     prj = yaml.safe_load(f)
 
-slope = gdal_load(prj['dem'])
+for az in range(0,360):
+    for zen in range(90-prj['steepest_slope'], 90):
+        outfn = prj['BOG'].format(az,zen)
+        print "Rscript mk_shade_grid.R {0} {1} {2}".format(zen, az, outfn)

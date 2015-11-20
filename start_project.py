@@ -4,6 +4,7 @@
  - path to DEM
  - DEM derivatives directory
  - SRB directory
+ - Binary Obstruction Grid (BOG) directory
  - temporary timestep and processing directory
 * Init spatial parameters
  - Define geotransforms for:
@@ -27,7 +28,7 @@ import sys
 import yaml
 import math
 import numpy as np
-from topocorr_funcs import Prj_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy, mk_latlon_grids
+from topocorr_funcs import Prj_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy, mk_latlon_grids, gdal_load
 
 prj_name = sys.argv[1] # $ python start_project.py prjName
 prj_param_fn = '{}_parameters.yaml'.format(prj_name)
@@ -43,6 +44,7 @@ else:
         prj['tmp_dir'] = os.path.join(prj['itopo_dir'], 'tmp/')
         prj['dem_dir'] = os.path.join(prj['itopo_dir'], 'dem_derivs/')
         prj['BOG_dir'] = os.path.join(prj['dem_dir'], 'BOGs')
+        prj['BOG'] = os.path.join(prj['BOG_dir'],'az{0}zen{1}.asc') #.format(solar_az,solar_zen)
 
         ### CREATE DIRS, IF NECESSARY
         Prj_mkdir(prj['itopo_dir'])
@@ -85,6 +87,9 @@ else:
         for cmd in prj['init_cmds']:
             print cmd
             ret = os.system(cmd)
+
+        slope = gdal_load(prj['slp'])
+        prj['steepest_slope'] = math.ceil(np.nanmax(slope))
 
         ###  DEFINE GEOTRANSFORMS
         if not 'dem_gt' in prj.keys():

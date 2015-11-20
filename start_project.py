@@ -89,7 +89,7 @@ else:
             ret = os.system(cmd)
 
         slope = gdal_load(prj['slp'])
-        prj['steepest_slope'] = math.ceil(np.nanmax(slope))
+        prj['steepest_slope'] = int(math.ceil(np.nanmax(slope)))
         bog_cmd_list = []
         for az in range(0,360):
             for zen in range(90-prj['steepest_slope'], 90):

@@ -127,6 +127,37 @@ def Get_solar_elevation(lat, yday, hour, return_sza=False):
         solar_elevation = 90-solar_zenith
         return solar_elevation
 
+
+def Cast_shade(prj, lat, lon, yday, utc_hour):
+    shade_map = np.ones(lat.shape,dtype='int')
+
+    #shade_fmt = os.path.join(shade_dir,'solaraz{0}solarzen{1}.asc')
+
+    hour = Get_utc_offset(lon) + utc_hour # 'local time in hours' #
+    sza_fl = (Get_solar_elevation(lat, yday, hour, return_sza=True))
+    decl = Get_solar_declination(yday)
+    h_s = Get_solar_hour_angle(hour)
+    s_az_fl = Get_solar_azi(h_s, lat, sza_fl, decl)
+
+    # make 'em integers
+    sza = np.round(sza_fl,0)
+    s_az = np.round(s_az_fl,0)
+
+    az = np.unique(s_az)
+    zen= np.unique(sza)
+
+    for solar_zen in zen:
+        if solar_zen<89:
+            for solar_az in az:
+                mask = ((sza==solar_zen)&(s_az==solar_az))
+                if mask.any():
+                    # bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
+                    shade = gdal_load(prj['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
+                    shade_map[mask]=shade[mask]
+
+    return shade_map
+
+
 # Some general purpose or notemaking geospatial functions:
 def Prj_mkdir(dir_path):
     '''Create a directory, with a bit of extra syntax.

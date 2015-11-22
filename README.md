@@ -28,9 +28,5 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
 
 
 ### TODO:
-* Move cmd lists into the project folders
-  + Maybe params can stay in the functions folder though?
 * Produce Sunview and Skyview 
-  + [x]  Binary Obstruction Grids (no obstruction when solar zenith is higher than max slope angle)
-  + [ ]  accumulate Skyview
   + [ ]  pre-stack a year's worth of 3hr Sunview grids, or just save them if they aren't saved yet?

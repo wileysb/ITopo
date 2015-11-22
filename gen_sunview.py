@@ -18,7 +18,7 @@ prj_param_fn = '{}_parameters.yaml'.format(prj_name)
 with file(prj_param_fn) as f:
     prj = yaml.safe_load(f)
 
-sunview_dir = os.path.join(prj['dem_derivs'], 'sunview')
+sunview_dir = os.path.join(prj['dem_dir'], 'sunview')
 Prj_mkdir(sunview_dir)
 
 

@@ -18,14 +18,13 @@ from topocorr_funcs import gdal_save_grid
 
 
 def sum_zen_ring(zen, gridmap):
-    skyview = np.zeros_like(gridmap)
+    ringview = np.zeros_like(gridmap)
     zen_weight = np.cos(np.deg2rad(90-zen))
     max_sum = 360*zen_weight
     for az in range(360):
-        print prj['BOG'].format(az,zen)
-        shade = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
-        skyview+=shade*zen_weight
-    return skyview,max_sum
+        bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
+        ringview+=bog*zen_weight
+    return ringview, max_sum
 
 
 prj_name = sys.argv[1] # $ python accumulate_skyview.py prjName
@@ -39,8 +38,9 @@ gridmap = np.loadtxt(prj['BOG'].format(0, 89), skiprows=6, delimiter=' ')
 skyview = np.zeros_like(gridmap)
 max_sum = np.zeros_like(gridmap)
 outfn = os.path.join(prj['dem_dir'],prj_name + '_skyview.asc')
+zen_over_horizon = 90-prj['steepest_slope']
 for zen in range(1,90):
-    if zen > 90-prj['steepest_slope']:
+    if zen < zen_over_horizon:
         print zen,'above highest possible horizon'
         zen_weight = np.cos(np.deg2rad(90-zen))
         skyview += np.ones_like(gridmap)*360*zen_weight

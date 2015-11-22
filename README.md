@@ -14,7 +14,7 @@ in extent and resolution.
 6. run $ python accumulate_skyview.py prjName
 
 
-###### Timing
+#### Timing
 | Cols x Rows | Step 5 | Step 6 |
 | ----------- | -----  | ------ |
 |  504 x 504  |    ?   | ~20min |

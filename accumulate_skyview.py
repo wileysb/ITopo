@@ -21,7 +21,7 @@ def sum_zen_ring(zen, gridmap):
     skyview = np.zeros_like(gridmap)
     zen_weight = np.cos(np.deg2rad(90-zen))
     max_sum = 360*zen_weight
-    for az in range(360):
+    for az in range(1,360):
         shade = np.loadtxt(prj['BOG'].format(az,zen),skiprows=6,delimiter=' ')
         skyview+=shade*zen_weight
     return skyview,max_sum

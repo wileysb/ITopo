@@ -30,3 +30,8 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
 ### TODO:
 * Produce Sunview and Skyview 
   + [ ]  pre-stack a year's worth of 3hr Sunview grids, or just save them if they aren't saved yet?
+* Convert SRB to project resolution (coarse to fine geog, fine geog to project epsg)
+* Unpack srb
+* Check grid products for alignment!
+* Process 1 month topocorr
+* polish project workflow, topographic correction from DEM to monthly climatology

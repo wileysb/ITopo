@@ -21,8 +21,9 @@ def sum_zen_ring(zen, gridmap):
     skyview = np.zeros_like(gridmap)
     zen_weight = np.cos(np.deg2rad(90-zen))
     max_sum = 360*zen_weight
-    for az in range(1,360):
-        shade = np.loadtxt(prj['BOG'].format(az,zen),skiprows=6,delimiter=' ')
+    for az in range(360):
+        print prj['BOG'].format(az,zen)
+        shade = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
         skyview+=shade*zen_weight
     return skyview,max_sum
 
@@ -33,17 +34,19 @@ prj_param_fn = '{}_parameters.yaml'.format(prj_name)
 with file(prj_param_fn) as f:
     prj = yaml.safe_load(f)
 
-gridmap = np.loadtxt(prj['BOG'].format(0,89),skiprows=6,delimiter=' ')
+gridmap = np.loadtxt(prj['BOG'].format(0, 89), skiprows=6, delimiter=' ')
 
 skyview = np.zeros_like(gridmap)
 max_sum = np.zeros_like(gridmap)
 outfn = os.path.join(prj['dem_dir'],prj_name + '_skyview.asc')
-for zen in range(0,90):
+for zen in range(1,90):
     if zen > 90-prj['steepest_slope']:
+        print zen,'above highest possible horizon'
         zen_weight = np.cos(np.deg2rad(90-zen))
         skyview += np.ones_like(gridmap)*360*zen_weight
         max_sum += np.ones_like(gridmap)*360*zen_weight
     else:
+        print zen, 'loading BOGs'
         skyview_ring,max_sum_ring = sum_zen_ring(zen,gridmap)
         skyview += skyview_ring
         max_sum += max_sum_ring

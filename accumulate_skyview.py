@@ -58,7 +58,8 @@ skyview_out = skyview / max_sum
 
 
 # Save out skyview
-skyview_args = {'ncols': prj['x_size'], 'nrows': prj['y_size'],
-                       'ulx': prj['xmin'], 'uly': prj['ymax'], 'epsg': prj['epsg'],
-                       'cellsize': prj['dx'], 'out_ds': outfn, 'from_dset': skyview_out}
+# from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy
+skyview_args = {'x_size': prj['x_size'], 'y_size': prj['y_size'],
+                'ulx': prj['xmin'], 'uly': prj['ymax'], 'epsg': prj['epsg'],
+                'dx': prj['dx'], 'dy': prj['dy'], 'outfn': outfn, 'from_dset': skyview_out}
 gdal_save_grid(**skyview_args)

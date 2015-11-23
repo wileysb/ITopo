@@ -46,11 +46,18 @@ else:
         prj['BOG_dir'] = os.path.join(prj['dem_dir'], 'BOGs')
         prj['BOG'] = os.path.join(prj['BOG_dir'],'az{0}zen{1}.asc') #.format(solar_az,solar_zen)
 
+        sunview_dir = os.path.join(prj['dem_dir'], 'sunview')
+        prj['sunview'] = os.path.join(sunview_dir, 'sunview_{0}_{1}.tif')
+
+        prj['srb'] = os.path.join(prj['srb_dir'],'srb_rel3.0_shortwave_3hrly_{0}{1}.nc')#.format(yyyy,mm)
+
+
         ### CREATE DIRS, IF NECESSARY
         Prj_mkdir(prj['itopo_dir'])
         Prj_mkdir(prj['tmp_dir'])
         Prj_mkdir(prj['dem_dir'])
         Prj_mkdir(prj['BOG_dir'])
+        Prj_mkdir(sunview_dir)
 
         prj['init_cmds'] = []
 

@@ -35,4 +35,7 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
 * Unpack srb
 * Check grid products for alignment!
 * Process 1 month topocorr
+ - gen_diff_days
+ - gen_itopo_days
+ - mean_itopo_month
 * polish project workflow, topographic correction from DEM to monthly climatology

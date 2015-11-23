@@ -18,8 +18,7 @@ prj_param_fn = '{}_parameters.yaml'.format(prj_name)
 with file(prj_param_fn) as f:
     prj = yaml.safe_load(f)
 
-sunview_dir = os.path.join(prj['dem_dir'], 'sunview')
-Prj_mkdir(sunview_dir)
+
 
 
 def gdal_save_binary_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy,
@@ -58,7 +57,7 @@ def gdal_save_binary_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, 
 if __name__ == "__main__":
     utc_hour = int(sys.argv[2])
 
-    sunview_fmt = os.path.join(sunview_dir, 'sunview_{0}_{1}.tif')
+    sunview_fmt = prj['sunview']
 
     ydays = np.arange(1,367)
 

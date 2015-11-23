@@ -56,7 +56,7 @@ def gdal_save_binary_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, 
 
 
 if __name__ == "__main__":
-    utc_hour = str(sys.argv[2])
+    utc_hour = int(sys.argv[2])
 
     sunview_fmt = os.path.join(sunview_dir, 'sunview_{0}_{1}.tif')
 

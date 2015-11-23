@@ -49,14 +49,249 @@ so the function can be applied to the whole grid at once without separate calcul
 solar geometry at each time step and each pixel location
 """
 
+from scipy.io.netcdf import netcdf_file
 import numpy as np
 import gdal
 import ogr
 import osr
 import os
 import sys
+import datetime as dt
 
-# Most of these equations are short and simple.
+
+# functions for diffuse fraction
+# from Skartveit, Olseth and Tuft, 1998
+def var_k(sw_sfc_dn, sw_toa_dn):
+    k = sw_sfc_dn.astype('float') / sw_toa_dn
+    return k
+
+
+def var_k_1(h):
+    k_1 = 0.83 - 0.56*np.e**(-0.06*h)
+    return k_1
+
+
+def var_k_max(k_b_max, d_2, k_2):
+    k_max = (k_b_max + d_2*k_2/(1-k_2)) / (1 + d_2*k_2/(1-k_2))
+    return k_max
+
+
+def var_d_1(h):
+    d_1 = np.copy(h) # type?
+    d_1[:] = 1
+    d_1[h>1.4] = 0.07 + 0.046 * (90-h[h>1.4])/(h[h>1.4]+3)
+    #if h>1.4:
+    #    d_1 = 0.07 + 0.046 * (90-h)/(h+3)
+    #else:
+    #    d_1 = 1
+    return d_1
+
+
+def var_d_max(d_2, k_2, k_max):
+    d_max = d_2 * k_2 * (1-k_max) / (k_max * (1-k_2))
+    return d_max
+
+
+def var_K(k, k_1):
+    K = 0.5*(1+np.sin(np.deg2rad(np.pi*(k - 0.22) / (k_1 - 0.22) - np.pi/2)))
+    return K
+
+
+def eq5(k,h):
+    k_1 = var_k_1(h) # 6b
+    d_1 = var_d_1(h) # 6d
+    K = var_K(k, k_1) # 6a
+    d = 1 - (1-d_1) * (0.11*np.sqrt(K) + 0.15*K + 0.74 * K**2) # eq 5
+    return d
+
+
+def eq7(d_2, k_2, k):
+    d = d_2 * k_2 * (1-k) / (k*(1-k_2))
+    return d
+
+
+def eq10(k_max, d_max, k):
+    d = 1-k_max*(1-d_max)/k
+    return d
+
+
+def Get_diffuse_fraction(sw_sfc_dn, sw_toa_dn, utc_hour, yday,lat, lon):
+    '''Given the downwelling shortwave irradiance at the top of the atmosphere
+    and at the surface, as well as the times and positions corresponding to the array cells,
+    return the fraction of irradiance made up by diffuse light.
+
+    Direct fraction = 1 - diffuse fraction
+
+    Equations sourced from:
+    'An Hourly Diffuse Fraction Model with Correction for Variability and Surface Albedo'
+    Arvid Skartveit, Jan Asle Olseth, Marit Elisabet Tuft
+    Solar Energy vol 63, no 3, pp 173-183
+    1998
+
+    Note: Due to the broad geographical (1 degree) and temporal (3 hour) averaging of the
+    NASA srb dataset, neither of the corrections detailed in the above paper are implemented.
+
+    Surface Albedo could be useful, but the equations are defined incompletely in the paper referenced.
+
+    Variability (correcting for heterogeneous cloud conditions) was implemented, but introduced
+    extremely faulty values for diffuse fraction, so was removed from the model.
+
+    Each of the following should be 1, 2 or 3 dimensional arrays with the same dimensions:
+    :param sw_sfc_dn:
+    :param sw_toa_dn:
+    :param utc_hour:
+    :param yday:
+    :param lat:
+    :param lon:
+    :return: diffuse fraction (0-1)
+    '''
+
+    sw_sfc_dn = np.where(sw_sfc_dn==0,np.nan,sw_sfc_dn)
+    sw_toa_dn = np.where(sw_toa_dn==0,np.nan,sw_toa_dn)
+
+
+    hour = Get_utc_offset(lon) + utc_hour # 'local time in hours' #
+
+    h = Get_solar_elevation(lat, yday, hour) # solar elevation, degrees
+    # Establish out-of-bounds values
+    # h = np.where(h<0,np.nan,h)
+
+    k = sw_sfc_dn.astype('float') / sw_toa_dn
+
+    k_1 = var_k_1(h)
+    k_2 = 0.95*k_1
+
+
+    # k_b_max = 0.81**((1/np.sin(np.deg2rad(h)))**0.6)
+    # k_b_max==incomputable as float64 where h<0:
+    k_b_max = 0.81**((1/np.sin(np.deg2rad(np.where(h<0,np.nan,h))))**0.6)
+    d_2 = eq5(k_2, h)
+    k_max = var_k_max(k_b_max, d_2, k_2)
+    d_max = var_d_max(d_2, k_2, k_max)
+
+
+    # start collecting diffuse fraction over various conditions
+    d = np.copy(k) # type?
+    # (1)
+    print 'start diffuse clearness conditionals ==>'
+
+    con1 =  (k <= 0.22) # 'invalid value encountered in less equal' because of nans in k
+    d[con1] = 1.00
+
+    # (2)
+    con2 = (0.22 <= k) & (k <= k_2)
+    d[con2] = eq5(k,h)[con2]
+
+    # (3)
+    con3 =(k_2 <= k) & (k <= k_max)
+    d[con3] = eq7(d_2, k_2, k)[con3]
+
+    # (4)
+    con4 = k >= k_max
+    d[con4] = eq10(k_max, d_max, k)[con4]
+
+
+    d[d>1] = 1
+    d[h<0] = 1 # no direct component when sun is below horizon
+
+    print '==> end diffuse clearness conditionals'
+    return d
+
+
+# Workflow (scriptlike) functions
+def Cast_shade(prj, lat, lon, yday, utc_hour):
+    shade_map = np.ones(lat.shape,dtype='int')
+    zen_over_horizon = 90-prj['steepest_slope']
+
+    #shade_fmt = os.path.join(shade_dir,'solaraz{0}solarzen{1}.asc')
+
+    hour = Get_utc_offset(lon) + utc_hour # 'local time in hours' #
+    sza_fl = (Get_solar_elevation(lat, yday, hour, return_sza=True))
+    decl = Get_solar_declination(yday)
+    h_s = Get_solar_hour_angle(hour)
+    s_az_fl = Get_solar_azi(h_s, lat, sza_fl, decl)
+
+    # make 'em integers
+    sza = np.round(sza_fl,0)
+    s_az = np.round(s_az_fl,0)
+
+    az = np.unique(s_az)
+    zen= np.unique(sza)
+
+    for solar_zen in zen:
+        if solar_zen<89:
+            for solar_az in az:
+                mask = ((sza==solar_zen)&(s_az==solar_az))
+                if mask.any():
+                    # bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
+                    if solar_zen > zen_over_horizon:
+                        shade = gdal_load(prj['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
+                    else:
+                        shade = np.ones_like(lat) # not zeros?
+                    shade_map[mask]=shade[mask]
+
+    return shade_map
+
+
+def unpack_srb_variables(srb_fn):
+    # todo dynamically translate prj['srb_gt'] into lon_s etc
+    srb = netcdf_file(srb_fn,'r',mmap=False)
+
+    # Norway boundaries
+    lon_s = 4 # todo these have to be dynamic, not fixed to whole norway
+    lon_e = 32
+    lat_s = 90+57
+    lat_e = 90+72
+
+    sw_sfc_dn = srb.variables['sw_sfc_dn'][:][:,lat_s:lat_e,lon_s:lon_e] * 0.1
+    sw_toa_dn = srb.variables['sw_toa_dn'][:][:,lat_s:lat_e,lon_s:lon_e] * 0.1
+    lat = srb.variables['lat'][:][lat_s:lat_e]
+    lon = srb.variables['lon'][:][lon_s:lon_e]
+    sza = srb.variables['sza'][:][:,lat_s:lat_e,lon_s:lon_e] # I don't think I use this anywhere
+    itime = srb.variables['time'][:]
+
+    srb.close()
+
+    t_0 = dt.datetime(1960,1,1)
+
+    itimes = [t_0 + dt.timedelta(hours=itime[i]) for i in range(len(itime))]
+    utc_hours = np.array([srbtime.hour for srbtime in itimes])
+    ydays     = [srbtime.timetuple().tm_yday for srbtime in itimes]
+
+    year = itimes[0].year
+
+    # make output grid, float values for same shape as sw_sfc_dn
+    # make lat and lon into grids
+    lonv, latv = np.meshgrid(lon, lat)
+
+    hr3  = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
+    lon3 = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
+    lat3 = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
+    yday3 = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
+
+    for i in range(len(utc_hours)):
+        lon3[i,:,:] = lonv
+        lat3[i,:,:] = latv
+        hr3[i,:,:]  = utc_hours[i]
+        yday3[i,:,:]  = ydays[i]
+
+
+    #sw_sfc_dn = np.where(sw_sfc_dn==0,np.nan,sw_sfc_dn)
+    #sw_toa_dn = np.where(sw_toa_dn==0,np.nan,sw_toa_dn)
+    diffuse_params = {'sw_sfc_dn':sw_sfc_dn, 'sw_toa_dn':sw_toa_dn, 'utc_hour':hr3,
+                      'yday':yday3,'lat':lat3,'lon':lon3}
+
+    d =  Get_diffuse_fraction(**diffuse_params)
+
+    srb_vars = {'sw_sfc_dn':sw_sfc_dn, 'sw_toa_dn':sw_toa_dn,
+                'diffuse':d,
+                'lat':lat, 'lon':lon, 'sza':sza, 'year':year,
+                'utc_hours':utc_hours, 'ydays':ydays}
+
+    return srb_vars
+
+
+# Functions relating solar angle to time, latitude, and longitude
 def Get_solar_declination(yday):
     '''delta_s = 23.45 sin (360d (284+N) / 365)'''
     delta_s = 23.45 * np.sin(np.deg2rad(360 * (284+yday) / 365))
@@ -126,40 +361,6 @@ def Get_solar_elevation(lat, yday, hour, return_sza=False):
     else:
         solar_elevation = 90-solar_zenith
         return solar_elevation
-
-
-def Cast_shade(prj, lat, lon, yday, utc_hour):
-    shade_map = np.ones(lat.shape,dtype='int')
-    zen_over_horizon = 90-prj['steepest_slope']
-
-    #shade_fmt = os.path.join(shade_dir,'solaraz{0}solarzen{1}.asc')
-
-    hour = Get_utc_offset(lon) + utc_hour # 'local time in hours' #
-    sza_fl = (Get_solar_elevation(lat, yday, hour, return_sza=True))
-    decl = Get_solar_declination(yday)
-    h_s = Get_solar_hour_angle(hour)
-    s_az_fl = Get_solar_azi(h_s, lat, sza_fl, decl)
-
-    # make 'em integers
-    sza = np.round(sza_fl,0)
-    s_az = np.round(s_az_fl,0)
-
-    az = np.unique(s_az)
-    zen= np.unique(sza)
-
-    for solar_zen in zen:
-        if solar_zen<89:
-            for solar_az in az:
-                mask = ((sza==solar_zen)&(s_az==solar_az))
-                if mask.any():
-                    # bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
-                    if solar_zen > zen_over_horizon:
-                        shade = gdal_load(prj['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
-                    else:
-                        shade = np.ones_like(lat) # not zeros?
-                    shade_map[mask]=shade[mask]
-
-    return shade_map
 
 
 # Some general purpose or notemaking geospatial functions:

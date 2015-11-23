@@ -16,12 +16,12 @@ in extent and resolution.
 
 
 #### Timing
-Cols x Rows | Step 5*  | Step 6 | Step 7*
+Cols x Rows | Step 5^  | Step 6 | Step 7^
 ----------- | -------- | ------ | -----
  504 x 504  | 1557min  | ~30min | ~5min
 ~~5041 x 5041~~ |Too large!|   ...  | 
 
-* time can be divided by numThreads
+^ time can be divided by numThreads
 
 Porsgrunn10m (5041x5041) BOGs is already 30G at azimuth 7/359.  Each BOG.asc is 49M.  This is unmanageably large.
 Maybe more manageable as compressed tifs? for comparison, Norway at 1km (1210x1532) was ~3.6M.

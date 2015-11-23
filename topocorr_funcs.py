@@ -130,6 +130,7 @@ def Get_solar_elevation(lat, yday, hour, return_sza=False):
 
 def Cast_shade(prj, lat, lon, yday, utc_hour):
     shade_map = np.ones(lat.shape,dtype='int')
+    zen_over_horizon = 90-prj['steepest_slope']
 
     #shade_fmt = os.path.join(shade_dir,'solaraz{0}solarzen{1}.asc')
 
@@ -152,7 +153,10 @@ def Cast_shade(prj, lat, lon, yday, utc_hour):
                 mask = ((sza==solar_zen)&(s_az==solar_az))
                 if mask.any():
                     # bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
-                    shade = gdal_load(prj['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
+                    if solar_zen < zen_over_horizon:
+                        shade = gdal_load(prj['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
+                    else:
+                        shade = np.ones_like(lat) # not zeros?
                     shade_map[mask]=shade[mask]
 
     return shade_map

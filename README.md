@@ -31,8 +31,6 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
 
 
 ### TODO:
-* Produce Sunview and Skyview 
-  + [ ]  Fix gen_sunview.py
 * Convert SRB to project resolution (coarse to fine geog, fine geog to project epsg)
 * Unpack srb
 * Check grid products for alignment!

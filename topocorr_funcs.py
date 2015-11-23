@@ -153,7 +153,7 @@ def Cast_shade(prj, lat, lon, yday, utc_hour):
                 mask = ((sza==solar_zen)&(s_az==solar_az))
                 if mask.any():
                     # bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
-                    if solar_zen < zen_over_horizon:
+                    if solar_zen > zen_over_horizon:
                         shade = gdal_load(prj['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
                     else:
                         shade = np.ones_like(lat) # not zeros?

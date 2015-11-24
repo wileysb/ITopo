@@ -128,8 +128,8 @@ else:
         srb_xmax = math.ceil(srb_xmax)
 
         srb_ulx, srb_uly = srb_xmin,srb_ymax
-        srb_x_size = int((srb_xmax - srb_xmin) / prj['dx'])
-        srb_y_size = int((srb_ymax - srb_ymin)/ prj['dy'])
+        srb_x_size = int((srb_xmax - srb_xmin)) +1 # / prj['dx'])
+        srb_y_size = int((srb_ymax - srb_ymin)) +1 # / prj['dy'])
 
         # If the input radiation is anything but srb, lots more will have to be recoded
         prj['srb_gt'] =     { 'outfn': 'MEM',  # wgs84lo

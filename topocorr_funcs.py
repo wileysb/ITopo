@@ -50,6 +50,7 @@ solar geometry at each time step and each pixel location
 """
 
 from scipy.io.netcdf import netcdf_file
+from scipy.ndimage.interpolation import zoom
 import numpy as np
 import gdal
 import ogr
@@ -291,6 +292,45 @@ def unpack_srb_variables(srb_fn):
     return srb_vars
 
 
+def srb_to_prjEpsg(srb_3hr_vars, project_parameters):
+    # todo fix gt dicts with param
+    yyyy = srb_3hr_vars['year']
+
+    out_fmt = os.path.join(project_parameters['tmp'], '{0}_{1}_{2}_{3}.tif')#.format(dset, year, yday, utc_hour)
+
+    for i in range(len(srb_3hr_vars['utc_hours'])):
+        yday = srb_3hr_vars['ydays'][i]
+        utc_hour = srb_3hr_vars['utc_hours'][i]
+
+
+        dset = 'sw_sfc_dn'
+        wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i,:,:])
+
+        # interpolate from degree resolution to 30arc seconds (0.5arc minutes = 120 per degree)
+        wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=120)
+
+        # save to gdal memory
+        wgs84hi['nanhandle'] = -999
+        utm33n_md['from_dset'] = gdal_save_grid(**wgs84hi)
+
+        # reproject sw_sfc_dn to utm33n, 1km
+        utm33n_md['outfn'] = out_fmt.format(dset, yyyy, yday, utc_hour)
+        utm_dset = gdal_resample(**utm33n_md)
+
+        dset = 'diffuse'
+        wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i,:,:])
+
+        # interpolate from degree resolution to 30arc seconds (0.5arc minutes = 120 per degree)
+        wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=120)
+
+        # save to gdal memory
+        utm33n_md['from_dset'] = gdal_save_grid(**wgs84hi)
+
+        # reproject sw_sfc_dn to utm33n, 1km
+        utm33n_md['outfn'] = out_fmt.format(dset, yyyy, yday, utc_hour)
+        utm_dset = gdal_resample(**utm33n_md)
+
+
 # Functions relating solar angle to time, latitude, and longitude
 def Get_solar_declination(yday):
     '''delta_s = 23.45 sin (360d (284+N) / 365)'''
@@ -409,6 +449,41 @@ def gdal_load(dset_fn):
 
     arr = np.where(arr==nodata, np.nan, arr)
     return arr
+
+
+def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy, nanhandle=False, rot0=0, rot1=0):
+
+    # Get from_projection
+    src_prj_string = from_dset.GetProjection()
+
+    # Bring projection info from EPSG to WKT string
+    dst_prj = osr.SpatialReference()
+    dst_prj.ImportFromEPSG(epsg)
+    dst_prj_string = dst_prj.ExportToWkt()
+
+    # Create memory dataset
+    if outfn=='MEM':
+        mem_drv = gdal.GetDriverByName('MEM')
+        dst = mem_drv.Create('',x_size, y_size, 1, gdal.GDT_Float64)
+
+    else:
+        gtiff_drv = gdal.GetDriverByName('GTiff')
+        dst = gtiff_drv.Create(outfn,x_size, y_size, 1, gdal.GDT_Float64)
+
+    # Assemble geotransform
+    geo_t = ( ulx, dx, rot0, \
+              uly, rot1, dy )
+
+    # Write geotransform, projection, and array to memory dataset
+    dst.SetGeoTransform( geo_t )
+    dst.SetProjection( dst_prj_string )
+
+    # can result in negatives? nans?
+    res = gdal.ReprojectImage(from_dset, dst, \
+          src_prj_string, dst_prj_string, \
+          gdal.GRA_Cubic) #_Bilinear )
+
+    return dst
 
 
 def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy, nanhandle=False, rot0=0, rot1=0):

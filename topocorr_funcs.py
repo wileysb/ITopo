@@ -558,7 +558,7 @@ def mk_latlon_grids(ncols,nrows,ulx,uly,cellsize, epsg, out_ds):
             lonX, latY = t_xy(t,eastings[i],nortings[j])
             lonv[j,i]=lonX
             latv[j,i]=latY
-        gdal.TermProgress_nocb(i,len(eastings))
+        gdal.TermProgress_nocb(i/float(len(eastings)))
 
     gdal_args = {'from_dset':lonv, 'outfn':out_ds+'_lon.tif', 'epsg':epsg,
                  'x_size':ncols, 'y_size':nrows, 'ulx':ulx, 'uly':uly, 'dx':cellsize, 'dy':-1*cellsize}

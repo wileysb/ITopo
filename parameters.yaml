@@ -29,7 +29,7 @@ gjende10m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /space/dems/dted10/6804_2_10m_z32.dem
-    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/srb_3hr/
     itopo_dir: /home/sl_wib/ITopo/gjende10m/
 
     ### DEFINE SPATIAL EXTENTS ###
@@ -55,7 +55,7 @@ gjende100m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /space/dems/dted10/6804_2_10m_z32.dem
-    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/srb_3hr/
     itopo_dir: /home/sl_wib/ITopo/gjende100m/
 
     ### DEFINE SPATIAL EXTENTS ###
@@ -81,7 +81,7 @@ gjende1000m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /space/dems/dted10/6804_2_10m_z32.dem
-    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/srb_3hr/
     itopo_dir: /home/sl_wib/ITopo/gjende1000m/
 
     ### DEFINE SPATIAL EXTENTS ###
@@ -108,7 +108,7 @@ porsgrunn10m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /space/dems/dted10/6805_4_10m_z32.dem
-    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/srb_3hr/
     itopo_dir: /home/sl_wib/ITopo/porsgrunn10m/
 
     ### DEFINE SPATIAL EXTENTS ###
@@ -135,7 +135,7 @@ porsgrunn100m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /space/dems/dted10/6805_4_10m_z32.dem
-    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/srb_3hr/
     itopo_dir: /home/sl_wib/ITopo/porsgrunn100m/
 
     ### DEFINE SPATIAL EXTENTS ###
@@ -162,7 +162,7 @@ porsgrunn1000m:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /space/dems/dted10/6805_4_10m_z32.dem
-    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/srb_3hr/
     itopo_dir: /home/sl_wib/ITopo/porsgrunn1000m/
 
     ### DEFINE SPATIAL EXTENTS ###
@@ -189,7 +189,7 @@ gtopo30norway1km:
 
     ### DEFINE PATHS TO IMPORTANT DIRECTORIES ###
     src_dem: /home/sl_wib/ITopo/data/gtopo30arcsec_norway.tif
-    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/
+    srb_dir: /space/wib_data/CLIMATE/NASA/srb_monthly_utc/srb_3hr/
     itopo_dir: /home/sl_wib/ITopo/gtopo30norway1km/
 
     ### DEFINE SPATIAL EXTENTS ###

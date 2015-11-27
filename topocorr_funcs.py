@@ -234,15 +234,24 @@ def Cast_shade(prj, lat, lon, yday, utc_hour):
     return shade_map
 
 
-def unpack_srb_variables(srb_fn):
-    # todo dynamically translate prj['srb_gt'] into lon_s etc
+def unpack_srb_variables(srb_fn, project_parameters):
+    """
+
+    :param project_parameters:
+    :param srb_fn:
+    :return:
+    """
     srb = netcdf_file(srb_fn,'r',mmap=False)
 
-    # Norway boundaries
-    lon_s = 4 # todo these have to be dynamic, not fixed to whole norway
-    lon_e = 32
-    lat_s = 90+57
-    lat_e = 90+72
+    srb_gt = project_parameters['srb_gt']
+
+    # AOI boundaries
+    lon_s = srb_gt['ulx']  # 4
+    lon_e = srb_gt['ulx'] + srb_gt['x_size']  # 32 = 4+28
+    lat_s = 90+srb_gt['uly'] - srb_gt['y_size']  # 57
+    lat_e = 90+srb_gt['uly']  # 72
+
+
 
     sw_sfc_dn = srb.variables['sw_sfc_dn'][:][:,lat_s:lat_e,lon_s:lon_e] * 0.1
     sw_toa_dn = srb.variables['sw_toa_dn'][:][:,lat_s:lat_e,lon_s:lon_e] * 0.1
@@ -282,7 +291,7 @@ def unpack_srb_variables(srb_fn):
     diffuse_params = {'sw_sfc_dn':sw_sfc_dn, 'sw_toa_dn':sw_toa_dn, 'utc_hour':hr3,
                       'yday':yday3,'lat':lat3,'lon':lon3}
 
-    d =  Get_diffuse_fraction(**diffuse_params)
+    d = Get_diffuse_fraction(**diffuse_params)
 
     srb_vars = {'sw_sfc_dn':sw_sfc_dn, 'sw_toa_dn':sw_toa_dn,
                 'diffuse':d,
@@ -293,7 +302,11 @@ def unpack_srb_variables(srb_fn):
 
 
 def srb_to_prjEpsg(srb_3hr_vars, project_parameters):
-    # todo fix gt dicts with param
+
+    wgs84lo = project_parameters['srb_gt']
+    wgs84hi = project_parameters['srb_hi_gt']
+    project_gt = project_parameters['dem_gt']
+
     yyyy = srb_3hr_vars['year']
 
     out_fmt = os.path.join(project_parameters['tmp'], '{0}_{1}_{2}_{3}.tif')#.format(dset, year, yday, utc_hour)
@@ -311,11 +324,11 @@ def srb_to_prjEpsg(srb_3hr_vars, project_parameters):
 
         # save to gdal memory
         wgs84hi['nanhandle'] = -999
-        utm33n_md['from_dset'] = gdal_save_grid(**wgs84hi)
+        project_gt['from_dset'] = gdal_save_grid(**wgs84hi)
 
         # reproject sw_sfc_dn to utm33n, 1km
-        utm33n_md['outfn'] = out_fmt.format(dset, yyyy, yday, utc_hour)
-        utm_dset = gdal_resample(**utm33n_md)
+        project_gt['outfn'] = out_fmt.format(dset, yyyy, yday, utc_hour)
+        utm_dset = gdal_resample(**project_gt)
 
         dset = 'diffuse'
         wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i,:,:])
@@ -324,11 +337,11 @@ def srb_to_prjEpsg(srb_3hr_vars, project_parameters):
         wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=120)
 
         # save to gdal memory
-        utm33n_md['from_dset'] = gdal_save_grid(**wgs84hi)
+        project_gt['from_dset'] = gdal_save_grid(**wgs84hi)
 
         # reproject sw_sfc_dn to utm33n, 1km
-        utm33n_md['outfn'] = out_fmt.format(dset, yyyy, yday, utc_hour)
-        utm_dset = gdal_resample(**utm33n_md)
+        project_gt['outfn'] = out_fmt.format(dset, yyyy, yday, utc_hour)
+        utm_dset = gdal_resample(**project_gt)
 
 
 # Functions relating solar angle to time, latitude, and longitude
@@ -481,7 +494,7 @@ def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy, nanh
     # can result in negatives? nans?
     res = gdal.ReprojectImage(from_dset, dst, \
           src_prj_string, dst_prj_string, \
-          gdal.GRA_Cubic) #_Bilinear )
+          gdal.GRA_Average) #_Cubic) #_Bilinear )
 
     return dst
 

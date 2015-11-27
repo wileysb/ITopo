@@ -4,7 +4,6 @@ __author__ = 'wiley'
 
 import sys
 import yaml
-import numpy as np
 
 from topocorr_funcs import unpack_srb_variables, srb_to_prjEpsg
 
@@ -16,13 +15,13 @@ with file(prj_param_fn) as f:
 
 
 if __name__ == "__main__":
-    yyyy=str(sys.argv[1])
-    mm  = str(sys.argv[2]).zfill(2)
+    yyyy=str(sys.argv[2])
+    mm  = str(sys.argv[3]).zfill(2)
 
     out_dir = prj['tmp_dir']
 
     srb_3hr_fn = prj['srb'].format(yyyy,mm)
 
-    srb_3hr_vars = unpack_srb_variables(srb_3hr_fn)
+    srb_3hr_vars = unpack_srb_variables(srb_3hr_fn, prj)
 
-    srb_to_prjEpsg(srb_3hr_vars, out_dir)
+    srb_to_prjEpsg(srb_3hr_vars, prj)

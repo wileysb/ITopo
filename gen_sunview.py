@@ -2,9 +2,8 @@
 
 __author__ = 'wiley'
 
-from topocorr_funcs import Safe_mkdir, gdal_load, Cast_shade
+from topocorr_funcs import gdal_load, gdal_save_grid, Cast_shade
 import numpy as np
-import os
 import sys
 import osr
 import gdal
@@ -72,5 +71,7 @@ if __name__ == "__main__":
     for yday in ydays:
 
         sunview_args['outfn'] = sunview_fmt.format(yday, utc_hour)
+        sunview_args['dtype'] = gdal.GDT_Byte
         sunview_args['from_dset'] = Cast_shade(project_parameters, lat, lon, yday, utc_hour).astype('int')
-        gdal_save_binary_grid(**sunview_args)
+        #gdal_save_binary_grid(**sunview_args)
+        gdal_save_grid(**sunview_args)

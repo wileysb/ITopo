@@ -31,10 +31,11 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
 
 
 ### TODO:
-* Unpack srb
- - some kind of error?
-* Convert SRB to project resolution (coarse to fine geog, fine geog to project epsg)
 * Check grid products for alignment!
+ - [x] DEM, slope, aspect
+ - [ ] BOG, skyview, sunview(t)
+ - [ ] srb (lo,hi,project)
+* Consider best srb resampling method (hi to project)
 * Process 1 month topocorr
  - gen_diff_days
  - gen_itopo_days

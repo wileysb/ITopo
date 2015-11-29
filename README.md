@@ -32,8 +32,7 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
 
 ### TODO:
 * Unpack srb
- - [ ] make sure project['srb_gt'] has rational values (right now x_size and y_size are 0...)
- - [ ] get srb indices [lon_s:lon_e,lat_s:lat_e] from project_parameters['srb_gt']
+ - some kind of error?
 * Convert SRB to project resolution (coarse to fine geog, fine geog to project epsg)
 * Check grid products for alignment!
 * Process 1 month topocorr

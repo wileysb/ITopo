@@ -14,6 +14,10 @@ in extent and resolution.
 6. run $ python accumulate_skyview.py projectName
 7. run $ parallel -j numThreads ./gen_sunview.py projectName {1}::: 0 3 6 9 12 15 18 21
 
+Implement workflow: 
+8.  python gen_diff_days.py projectName yyyy mm
+9.  python gen_itopo_days.py projectName yyyy mm
+10. python mean_itopo_month.py projectName yyyy mm
 
 #### Timing
 Cols x Rows | Step 5^  | Step 6 | Step 7^
@@ -36,8 +40,4 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
  - [ ] BOG, skyview, sunview(t)
  - [ ] srb (lo,hi,project)
 * Consider best srb resampling method (hi to project)
-* Process 1 month topocorr
- - gen_diff_days
- - gen_itopo_days
- - mean_itopo_month
 * polish project workflow, topographic correction from DEM to monthly climatology

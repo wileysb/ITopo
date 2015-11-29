@@ -42,10 +42,10 @@ else:
     if project_name in parameters.keys():
         project_parameters = parameters[project_name]
         project_parameters['tmp_dir'] = os.path.join(project_parameters['itopo_dir'], 'tmp/')
-        project_parameters['dem_dir'] = os.path.join(['itopo_dir'], 'dem_derivs/')
+        project_parameters['dem_dir'] = os.path.join(project_parameters['itopo_dir'], 'dem_derivs/')
         project_parameters['BOG_dir'] = os.path.join(project_parameters['dem_dir'], 'BOGs')
-        project_parameters['out_dir'] = os.path.join(project_parameters['itopo_dir'],'monthly_means')
-        project_parameters['BOG'] = os.path.join(project_parameters['BOG_dir'],'az{0}zen{1}.asc') #.format(solar_az,solar_zen)
+        project_parameters['out_dir'] = os.path.join(project_parameters['itopo_dir'], 'monthly_means')
+        project_parameters['BOG'] = os.path.join(project_parameters['BOG_dir'], 'az{0}zen{1}.asc') #.format(solar_az,solar_zen)
 
 
         sunview_dir = os.path.join(project_parameters['dem_dir'], 'sunview')

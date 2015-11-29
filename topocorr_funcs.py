@@ -246,7 +246,7 @@ def unpack_srb_variables(srb_fn, project_parameters):
     srb_gt = project_parameters['srb_gt']
 
     # AOI boundaries
-    lon_s = srb_gt['ulx']  # 4
+    lon_s = srb_gt['ulx']  # 4 # 4.5??!
     lon_e = srb_gt['ulx'] + srb_gt['x_size']  # 32 = 4+28
     lat_s = 90+srb_gt['uly'] - srb_gt['y_size']  # 57
     lat_e = 90+srb_gt['uly']  # 72

@@ -320,7 +320,7 @@ def srb_to_prjEpsg(srb_3hr_vars, project_parameters):
         wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i,:,:])
 
         # interpolate from degree resolution to 30arc seconds (0.5arc minutes = 120 per degree)
-        wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=120)
+        wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=project_parameters['srb_zoom_factor'])
 
         # save to gdal memory
         wgs84hi['nanhandle'] = -999
@@ -334,7 +334,7 @@ def srb_to_prjEpsg(srb_3hr_vars, project_parameters):
         wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i,:,:])
 
         # interpolate from degree resolution to 30arc seconds (0.5arc minutes = 120 per degree)
-        wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=120)
+        wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=project_parameters['srb_zoom_factor'])
 
         # save to gdal memory
         project_gt['from_dset'] = gdal_save_grid(**wgs84hi)
@@ -464,7 +464,8 @@ def gdal_load(dset_fn):
     return arr
 
 
-def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy, nanhandle=False, rot0=0, rot1=0):
+def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy,
+                  r=gdal.GRA_Cubic, dtype=gdal.GDT_Float64, nanhandle=False, rot0=0, rot1=0):
 
     # Get from_projection
     src_prj_string = from_dset.GetProjection()
@@ -477,11 +478,11 @@ def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy, nanh
     # Create memory dataset
     if outfn=='MEM':
         mem_drv = gdal.GetDriverByName('MEM')
-        dst = mem_drv.Create('',x_size, y_size, 1, gdal.GDT_Float64)
+        dst = mem_drv.Create('',x_size, y_size, 1, dtype)
 
     else:
         gtiff_drv = gdal.GetDriverByName('GTiff')
-        dst = gtiff_drv.Create(outfn,x_size, y_size, 1, gdal.GDT_Float64)
+        dst = gtiff_drv.Create(outfn,x_size, y_size, 1, dtype)
 
     # Assemble geotransform
     geo_t = ( ulx, dx, rot0, \
@@ -494,7 +495,7 @@ def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy, nanh
     # can result in negatives? nans?
     res = gdal.ReprojectImage(from_dset, dst, \
           src_prj_string, dst_prj_string, \
-          gdal.GRA_Average) #_Cubic) #_Bilinear )
+          r )# gdal.GRA_Average) #gdal.GRA_Cubic) #gdal.GRA_Bilinear )
 
     return dst
 

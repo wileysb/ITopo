@@ -60,6 +60,139 @@ import sys
 import datetime as dt
 
 
+# Topographic correction
+def Apply_topo_corr(sw_sfc_dn, p_diffuse, shade, slope, aspect, skyview, lat, lon, yday, utc_hr):
+    '''derive cos_i and apply along with topographic shading/skyview and diffuse/direct ratios
+
+    cos(i) is the dot product of the normal vectors representing solar and terrain angles
+
+    :param sw_sfc_dn: array with dimensions [time, y, x]
+    :param p_diffuse: array with dimensions [time, y, x]
+    :param shade:     array with dimensions [time, y, x]
+    :param slope:     array with dimensions [y,x]
+    :param aspect:    array with dimensions [y,x]
+    :param skyview:   array with dimensions [y,x]
+    :param lat:       array with dimensions [y,x]
+    :param lon:       array with dimensions [y,x]
+    :param yday:      array with dimensions [time]
+    :param utc_hr:    array with dimensions [time]
+    :return: sw_sfc_dn_topo, array with dimensions [time, y, x]
+    '''
+
+    subzero = sw_sfc_dn < 0
+    sw_sfc_dn[subzero] = 0
+
+    subzero = p_diffuse < 0
+    p_diffuse[subzero] = 0
+
+    irrat   = p_diffuse > 1
+    p_diffuse[irrat] = 1
+
+    local_hr = Get_utc_offset(lon) + utc_hr # map/grid
+    h_s = Get_solar_hour_angle(local_hr) # value
+    delta_s = Get_solar_declination(yday) # value
+
+    cos_i_params     = {'delta_s':delta_s, 'h_s':h_s, 'lat':lat, 'slope':slope, 'aspect':aspect}
+    cos_i_corr = Get_corr(**cos_i_params)
+
+    sza_fl = (Get_solar_elevation(lat, yday, local_hr, return_sza=True))
+    sza_int = np.round(sza_fl,0)
+
+    sunset = sza_int < 89
+
+    shade[sunset] = 0
+
+    p_direct = 1-p_diffuse
+    topodir = sw_sfc_dn * p_direct * cos_i_corr * shade
+    # (topodir[(np.isnan(topodir)!=(np.isnan(slope) | np.isnan(aspect)))]==0).all()
+    # topodir is nan everywhere slope or aspect are nan, unless topodir has been set to 0
+    # Are all these slope and aspect nans lakes?
+
+    topodiff = sw_sfc_dn * p_diffuse * skyview
+
+    itopo = topodir + topodiff
+
+    # make sure nans don't screw up averaging!
+    zer0s = sw_sfc_dn==0
+    itopo[zer0s] = 0
+    # any other nanjustments indicated?
+
+    return itopo
+
+
+def Get_cos_i(delta_s, h_s, lat, slope, aspect):
+    '''Reference: Kumar et al, 1997, 'Solar radiation modelling'
+
+    The function is an implementation of the following equation from this reference:
+    cos i = sin(delta_s) * (sin(L)cos(beta) - cos(L)sin(beta)cos(a_w)) +
+            cos(delta_s)cos(h_s) * (cos(L)cos(beta) + sin(L)sin(beta)cos(a_w)) +
+            cos(delta_s)sin(beta)sin(a_w)sin(h_s)
+
+            a_w = aspect angle
+            beta = slope angle
+            L = latitude
+            delta_s = solar declination
+            h_s = sun hour angle
+    '''
+    # for some reason this seems to take aspect 0 as south facing?
+    aspect = (aspect-180)%360
+
+    # first prepare a bunch of short, familiar names for readability
+    from numpy import cos
+    from numpy import sin
+    rlat = np.deg2rad(lat)
+    rslope = np.deg2rad(slope)
+    raspect = np.deg2rad(aspect)
+    rdelta_s = np.deg2rad(delta_s)
+    rh_s = np.deg2rad(h_s)
+
+    # then define the function
+    term1 = sin(rdelta_s) * \
+                           (sin(rlat) * cos(rslope) - \
+                            cos(rlat) * sin(rslope) * cos(raspect))
+
+    term2 = cos(rdelta_s) * cos(rh_s) * \
+                                      (cos(rlat) * cos(rslope) + \
+                                       sin(rlat) * sin(rslope) * cos(raspect))
+
+    term3 = cos(rdelta_s) * sin(rslope) * sin(raspect) * sin(rh_s)
+
+    cos_i = term1 + term2 + term3
+
+    return cos_i
+
+
+def Get_corr(delta_s, h_s, lat, slope, aspect):
+    cos_i_horizontal_params     = {'delta_s':delta_s, 'h_s':h_s, 'lat':lat, 'slope':0, 'aspect':0}
+    cos_i_horizontal = Get_cos_i(**cos_i_horizontal_params)
+
+     # if slope or aspect are nan, it's a body of water, so they are basically just horizontal terrain
+    # for which slope is 0, aspect is meaningless
+    aspect[np.isnan(aspect)] = 0
+    slope[np.isnan(slope)] = 0
+
+    cos_i_topo_params     = {'delta_s':delta_s, 'h_s':h_s, 'lat':lat, 'slope':slope, 'aspect':aspect}
+    cos_i_topo       = Get_cos_i(**cos_i_topo_params)
+    # Alternate formulation, from Grenfell et al 1994:
+    # cos_i_topo = np.cos(np.deg2rad(sza-slope*np.cos(np.deg2rad(aspect-solar_azimuth))))
+
+    cos_i_corr = cos_i_topo / cos_i_horizontal # should be >1 when south facing slope, <1 when northfacing. Negative means 0 irrad
+
+    # Set corrected direct irradiance to zero when:
+    # * cos_i_horizontal is too close to 0 (result grows towards infinity),
+    # * either cos_i is 0 or negative
+    # ...(but cos_i_horizontal shouldn't have nans)
+    small_thresh = 0.01
+    # mask = np.isnan(cos_i_topo)
+    # mask = mask | np.isnan(cos_i_horizontal)
+    mask = (cos_i_horizontal <= (0 + small_thresh)) # | mask
+    mask = (cos_i_topo <= 0) | mask
+
+    cos_i_corr[mask] = 0 # the direct component in any of these situations should be 0
+
+    return cos_i_corr
+
+
 # functions for diffuse fraction
 # from Skartveit, Olseth and Tuft, 1998
 def var_k(sw_sfc_dn, sw_toa_dn):

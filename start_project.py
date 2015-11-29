@@ -30,86 +30,86 @@ import math
 import numpy as np
 from topocorr_funcs import Prj_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy, mk_latlon_grids, gdal_load
 
-prj_name = sys.argv[1] # $ python start_project.py prjName
-prj_param_fn = '{}_parameters.yaml'.format(prj_name)
+project_name = sys.argv[1] # $ python start_project.py prjName
+prj_param_fn = '{}_parameters.yaml'.format(project_name)
 
-if os.path.isfile(prj_param_fn.format(prj_name)):
-    print prj_param_fn.format(prj_name), 'exists.  To start over, delete or rename the existing file.'
+if os.path.isfile(prj_param_fn.format(project_name)):
+    print prj_param_fn.format(project_name), 'exists.  To start over, delete or rename the existing file.'
 else:
     ### LOAD PROJECT PARAMETERS ###
     with file('parameters.yaml','r') as f:
         parameters = yaml.safe_load(f)
-    if prj_name in parameters.keys():
-        prj = parameters[prj_name]
-        prj['tmp_dir'] = os.path.join(prj['itopo_dir'], 'tmp/')
-        prj['dem_dir'] = os.path.join(prj['itopo_dir'], 'dem_derivs/')
-        prj['BOG_dir'] = os.path.join(prj['dem_dir'], 'BOGs')
-        prj['BOG'] = os.path.join(prj['BOG_dir'],'az{0}zen{1}.asc') #.format(solar_az,solar_zen)
+    if project_name in parameters.keys():
+        project_parameters = parameters[project_name]
+        project_parameters['tmp_dir'] = os.path.join(project_parameters['itopo_dir'], 'tmp/')
+        project_parameters['dem_dir'] = os.path.join(project_parameters['itopo_dir'], 'dem_derivs/')
+        project_parameters['BOG_dir'] = os.path.join(project_parameters['dem_dir'], 'BOGs')
+        project_parameters['BOG'] = os.path.join(project_parameters['BOG_dir'],'az{0}zen{1}.asc') #.format(solar_az,solar_zen)
 
-        sunview_dir = os.path.join(prj['dem_dir'], 'sunview')
-        prj['sunview'] = os.path.join(sunview_dir, 'sunview_{0}_{1}.tif')
+        sunview_dir = os.path.join(project_parameters['dem_dir'], 'sunview')
+        project_parameters['sunview'] = os.path.join(sunview_dir, 'sunview_{0}_{1}.tif')
 
-        prj['srb'] = os.path.join(prj['srb_dir'],'srb_rel3.0_shortwave_3hrly_{0}{1}.nc')#.format(yyyy,mm)
+        project_parameters['srb'] = os.path.join(project_parameters['srb_dir'],'srb_rel3.0_shortwave_3hrly_{0}{1}.nc')#.format(yyyy,mm)
 
 
         ### CREATE DIRS, IF NECESSARY
-        Prj_mkdir(prj['itopo_dir'])
-        Prj_mkdir(prj['tmp_dir'])
-        Prj_mkdir(prj['dem_dir'])
-        Prj_mkdir(prj['BOG_dir'])
+        Prj_mkdir(project_parameters['itopo_dir'])
+        Prj_mkdir(project_parameters['tmp_dir'])
+        Prj_mkdir(project_parameters['dem_dir'])
+        Prj_mkdir(project_parameters['BOG_dir'])
         Prj_mkdir(sunview_dir)
 
-        prj['init_cmds'] = []
+        project_parameters['init_cmds'] = []
 
 
         ### Clip DEM ###
-        prj['dem'] = os.path.join(prj['dem_dir'],prj_name+'_dem.tif')
-        if os.path.isfile(prj['dem']):
-            prj['dem_gt']   = Get_gt_dict(prj['dem'])
-            prj['x_size'] = prj['dem_gt']['x_size']
-            prj['y_size'] = prj['dem_gt']['y_size']
-            prj['epsg'] =  prj['dem_gt']['epsg']
-            prj['dx'] = prj['dem_gt']['dx']
-            prj['dy']= prj['dem_gt']['dy']
-            prj['xmin']= prj['dem_gt']['ulx']
-            prj['ymax']= prj['dem_gt']['uly']
-            prj['ymin']= prj['ymax'] + prj['dy']*prj['dem_gt']['y_size']
-            prj['xmax']= prj['xmin'] + prj['dx']*prj['dem_gt']['x_size']
+        project_parameters['dem'] = os.path.join(project_parameters['dem_dir'],project_name+'_dem.tif')
+        if os.path.isfile(project_parameters['dem']):
+            project_parameters['dem_gt']   = Get_gt_dict(project_parameters['dem'])
+            project_parameters['x_size'] = project_parameters['dem_gt']['x_size']
+            project_parameters['y_size'] = project_parameters['dem_gt']['y_size']
+            project_parameters['epsg'] =  project_parameters['dem_gt']['epsg']
+            project_parameters['dx'] = project_parameters['dem_gt']['dx']
+            project_parameters['dy']= project_parameters['dem_gt']['dy']
+            project_parameters['xmin']= project_parameters['dem_gt']['ulx']
+            project_parameters['ymax']= project_parameters['dem_gt']['uly']
+            project_parameters['ymin']= project_parameters['ymax'] + project_parameters['dy']*project_parameters['dem_gt']['y_size']
+            project_parameters['xmax']= project_parameters['xmin'] + project_parameters['dx']*project_parameters['dem_gt']['x_size']
         else:
             gdalwarp_cmd = 'gdalwarp -t_srs "EPSG:{0}" -tr {1} {2} -te {3} {4} {5} {6} -r cubic -of GTiff {7} {8}'.format(
-                            prj['epsg'],prj['dx'],np.abs(prj['dy']),
-                            prj['xmin'],prj['ymin'],prj['xmax'],prj['ymax'],
-                            prj['src_dem'],prj['dem'])
-            prj['init_cmds'].append(gdalwarp_cmd)
+                            project_parameters['epsg'],project_parameters['dx'],np.abs(project_parameters['dy']),
+                            project_parameters['xmin'],project_parameters['ymin'],project_parameters['xmax'],project_parameters['ymax'],
+                            project_parameters['src_dem'],project_parameters['dem'])
+            project_parameters['init_cmds'].append(gdalwarp_cmd)
 
             # set xmin,ymin,xmax,ymax,dx,dy from same
         # Slope and Aspect
-        prj['asp'] = os.path.join(prj['dem_dir'],prj_name+'_asp.tif')
-        prj['slp'] = os.path.join(prj['dem_dir'],prj_name+'_slp.tif')
-        slp_cmd = 'gdaldem slope {0} {1}'.format(prj['dem'],prj['slp'])
-        asp_cmd = 'gdaldem aspect -zero_for_flat {0} {1}'.format(prj['dem'],prj['asp'])
-        prj['init_cmds'].append(slp_cmd)
-        prj['init_cmds'].append(asp_cmd)
+        project_parameters['asp'] = os.path.join(project_parameters['dem_dir'],project_name+'_asp.tif')
+        project_parameters['slp'] = os.path.join(project_parameters['dem_dir'],project_name+'_slp.tif')
+        slp_cmd = 'gdaldem slope {0} {1}'.format(project_parameters['dem'],project_parameters['slp'])
+        asp_cmd = 'gdaldem aspect -zero_for_flat {0} {1}'.format(project_parameters['dem'],project_parameters['asp'])
+        project_parameters['init_cmds'].append(slp_cmd)
+        project_parameters['init_cmds'].append(asp_cmd)
 
-        for cmd in prj['init_cmds']:
+        for cmd in project_parameters['init_cmds']:
             print cmd
             ret = os.system(cmd)
 
-        slope = gdal_load(prj['slp'])
-        prj['steepest_slope'] = int(math.ceil(np.nanmax(slope)))
+        slope = gdal_load(project_parameters['slp'])
+        project_parameters['steepest_slope'] = int(math.ceil(np.nanmax(slope)))
         bog_cmd_list = []
         for az in range(0,360):
-            for zen in range(90-prj['steepest_slope'], 90):
-                outfn = prj['BOG'].format(az,zen)
-                bog_cmd_list.append("Rscript mk_shade_grid.R {0} {1} {2} {3}\n".format(prj['dem'],zen, az, outfn))
-        with open(os.path.join(prj['itopo_dir'],'BOG.cmds'),'w') as bog_cmds:
+            for zen in range(90-project_parameters['steepest_slope'], 90):
+                outfn = project_parameters['BOG'].format(az,zen)
+                bog_cmd_list.append("Rscript mk_shade_grid.R {0} {1} {2} {3}\n".format(project_parameters['dem'],zen, az, outfn))
+        with open(os.path.join(project_parameters['itopo_dir'],'BOG.cmds'),'w') as bog_cmds:
             bog_cmds.writelines(bog_cmd_list)
 
         ###  DEFINE GEOTRANSFORMS
-        if not 'dem_gt' in prj.keys():
-            prj['dem_gt']   = Get_gt_dict(prj['dem'])
-            prj['x_size'] = prj['dem_gt']['x_size']
-            prj['y_size'] = prj['dem_gt']['y_size']
+        if not 'dem_gt' in project_parameters.keys():
+            project_parameters['dem_gt']   = Get_gt_dict(project_parameters['dem'])
+            project_parameters['x_size'] = project_parameters['dem_gt']['x_size']
+            project_parameters['y_size'] = project_parameters['dem_gt']['y_size']
         # todo NOTE:
         #  in the hardcoded utm33n_md, 'ulx' and 'uly' off by 500m (pixel corners vs pixel center)
         #   'ulx':-84500.00 hardcoded, vs  -85000.0  from function
@@ -117,9 +117,9 @@ else:
 
         # Get srb bounding ulx and uly + x_size, y_size
          # This is only OK as long as corners from prj_extents form geographic max + min values
-        t = transform_epsg2epsg(int(prj['epsg']),4326)
-        srb_xmin,srb_ymax = t_xy(t,prj['xmin'],prj['ymax'])
-        srb_xmax,srb_ymin = t_xy(t,prj['xmax'],prj['ymin'])
+        t = transform_epsg2epsg(int(project_parameters['epsg']),4326)
+        srb_xmin,srb_ymax = t_xy(t,project_parameters['xmin'],project_parameters['ymax'])
+        srb_xmax,srb_ymin = t_xy(t,project_parameters['xmax'],project_parameters['ymin'])
 
         # expand to integers
         srb_ymin = math.floor(srb_ymin)
@@ -128,11 +128,11 @@ else:
         srb_xmax = math.ceil(srb_xmax)
 
         srb_ulx, srb_uly = srb_xmin,srb_ymax
-        srb_x_size = int((srb_xmax - srb_xmin)) +1 # / prj['dx'])
-        srb_y_size = int((srb_ymax - srb_ymin)) +1 # / prj['dy'])
+        srb_x_size = int((srb_xmax - srb_xmin)) +1 # / project_parameters['dx'])
+        srb_y_size = int((srb_ymax - srb_ymin)) +1 # / project_parameters['dy'])
 
         # If the input radiation is anything but srb, lots more will have to be recoded
-        prj['srb_gt'] =     { 'outfn': 'MEM',  # wgs84lo
+        project_parameters['srb_gt'] =     { 'outfn': 'MEM',  # wgs84lo
                               'from_dset': None,
                               'epsg': 4326,
                               'x_size': srb_x_size,
@@ -143,28 +143,28 @@ else:
                               'uly': srb_uly}
 
         # 1 degree = 3600 arc seconds.  1 arc second ~ 30m. 1000m output used 30 arc seconds = zoom 120
-        prj['srb_zoom_factor'] = int(108000 / prj['dem_gt']['dx'])
-        prj['srb_hi_gt'] = prj['srb_gt'].copy()
+        project_parameters['srb_zoom_factor'] = int(108000 / project_parameters['dem_gt']['dx'])
+        project_parameters['srb_hi_gt'] = project_parameters['srb_gt'].copy()
 
-        prj['srb_hi_gt']['dx'] = float(prj['srb_gt']['dx'])/prj['srb_zoom_factor']  # 1 / 120 = 0.008333
-        prj['srb_hi_gt']['dy'] = float(prj['srb_gt']['dy'])/prj['srb_zoom_factor']  # 1 / 120 = 0.008333
-        prj['srb_hi_gt']['x_size'] = prj['srb_gt']['x_size'] * prj['srb_zoom_factor']
-        prj['srb_hi_gt']['y_size'] = prj['srb_gt']['y_size'] * prj['srb_zoom_factor']
+        project_parameters['srb_hi_gt']['dx'] = float(project_parameters['srb_gt']['dx'])/project_parameters['srb_zoom_factor']  # 1 / 120 = 0.008333
+        project_parameters['srb_hi_gt']['dy'] = float(project_parameters['srb_gt']['dy'])/project_parameters['srb_zoom_factor']  # 1 / 120 = 0.008333
+        project_parameters['srb_hi_gt']['x_size'] = project_parameters['srb_gt']['x_size'] * project_parameters['srb_zoom_factor']
+        project_parameters['srb_hi_gt']['y_size'] = project_parameters['srb_gt']['y_size'] * project_parameters['srb_zoom_factor']
 
         # Make latlon
-        prj['lat'] = os.path.join(prj['dem_dir'],prj_name+'_lat.tif')
-        prj['lon'] = os.path.join(prj['dem_dir'],prj_name+'_lon.tif')
+        project_parameters['lat'] = os.path.join(project_parameters['dem_dir'],project_name+'_lat.tif')
+        project_parameters['lon'] = os.path.join(project_parameters['dem_dir'],project_name+'_lon.tif')
         #mk_latlon_grids(ncols,nrows,xll,yll,cellsize, out_ds)
-        latlon_args = {'ncols': prj['x_size'], 'nrows': prj['y_size'],
-                       'ulx': prj['xmin'], 'uly': prj['ymax'], 'epsg': prj['epsg'],
-                       'cellsize': prj['dx'], 'out_ds': os.path.join(prj['dem_dir'], prj_name)}
+        latlon_args = {'ncols': project_parameters['x_size'], 'nrows': project_parameters['y_size'],
+                       'ulx': project_parameters['xmin'], 'uly': project_parameters['ymax'], 'epsg': project_parameters['epsg'],
+                       'cellsize': project_parameters['dx'], 'out_ds': os.path.join(project_parameters['dem_dir'], project_name)}
         print 'Making Lat and Lon grids in output projection'
         mk_latlon_grids(**latlon_args)
 
         with file(prj_param_fn,'w') as f:
-                yaml.safe_dump(prj,f)
+                yaml.safe_dump(project_parameters,f)
     else:
-        print prj_name,'not found in parameters.yaml'
+        print project_name,'not found in parameters.yaml'
 
 
 

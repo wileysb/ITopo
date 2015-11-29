@@ -200,9 +200,9 @@ def Get_diffuse_fraction(sw_sfc_dn, sw_toa_dn, utc_hour, yday,lat, lon):
 
 
 # Workflow (scriptlike) functions
-def Cast_shade(prj, lat, lon, yday, utc_hour):
+def Cast_shade(project_parameters, lat, lon, yday, utc_hour):
     shade_map = np.ones(lat.shape,dtype='int')
-    zen_over_horizon = 90-prj['steepest_slope']
+    zen_over_horizon = 90-project_parameters['steepest_slope']
 
     #shade_fmt = os.path.join(shade_dir,'solaraz{0}solarzen{1}.asc')
 
@@ -224,9 +224,9 @@ def Cast_shade(prj, lat, lon, yday, utc_hour):
             for solar_az in az:
                 mask = ((sza==solar_zen)&(s_az==solar_az))
                 if mask.any():
-                    # bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
+                    # bog = np.loadtxt(project_parameters['BOG'].format(az, zen), skiprows=6, delimiter=' ')
                     if solar_zen > zen_over_horizon:
-                        shade = gdal_load(prj['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
+                        shade = gdal_load(project_parameters['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
                     else:
                         shade = np.ones_like(lat) # not zeros?
                     shade_map[mask]=shade[mask]

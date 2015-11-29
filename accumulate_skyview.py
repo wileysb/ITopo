@@ -22,23 +22,23 @@ def sum_zen_ring(zen, gridmap):
     zen_weight = np.cos(np.deg2rad(90-zen))
     max_sum = 360*zen_weight
     for az in range(360):
-        bog = np.loadtxt(prj['BOG'].format(az, zen), skiprows=6, delimiter=' ')
+        bog = np.loadtxt(project_parameters['BOG'].format(az, zen), skiprows=6, delimiter=' ')
         ringview+=bog*zen_weight
     return ringview, max_sum
 
 
-prj_name = sys.argv[1] # $ python accumulate_skyview.py prjName
+project_name = sys.argv[1] # $ python accumulate_skyview.py prjName
 
-prj_param_fn = '{}_parameters.yaml'.format(prj_name)
+prj_param_fn = '{}_parameters.yaml'.format(project_name)
 with file(prj_param_fn) as f:
-    prj = yaml.safe_load(f)
+    project_parameters = yaml.safe_load(f)
 
-gridmap = np.loadtxt(prj['BOG'].format(0, 89), skiprows=6, delimiter=' ')
+gridmap = np.loadtxt(project_parameters['BOG'].format(0, 89), skiprows=6, delimiter=' ')
 
 skyview = np.zeros_like(gridmap)
 max_sum = np.zeros_like(gridmap)
-outfn = os.path.join(prj['dem_dir'],prj_name + '_skyview.asc')
-zen_over_horizon = 90-prj['steepest_slope']
+outfn = os.path.join(project_parameters['dem_dir'],project_name + '_skyview.asc')
+zen_over_horizon = 90-project_parameters['steepest_slope']
 for zen in range(1,90):
     if zen < zen_over_horizon:
         print zen,'above highest possible horizon'
@@ -51,7 +51,7 @@ for zen in range(1,90):
         skyview += skyview_ring
         max_sum += max_sum_ring
         #for az in range(0,360):
-        #    skyview+=np.loadtxt(prj['BOG'].format(az,zen),skiprows=6,delimiter=' ') * zen_weight
+        #    skyview+=np.loadtxt(project_parameters['BOG'].format(az,zen),skiprows=6,delimiter=' ') * zen_weight
 
 # Normalize skyview (0:1)
 skyview_out = skyview / max_sum
@@ -59,7 +59,7 @@ skyview_out = skyview / max_sum
 
 # Save out skyview
 # from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy
-skyview_args = {'x_size': prj['x_size'], 'y_size': prj['y_size'],
-                'ulx': prj['xmin'], 'uly': prj['ymax'], 'epsg': prj['epsg'],
-                'dx': prj['dx'], 'dy': prj['dy'], 'outfn': outfn, 'from_dset': skyview_out}
+skyview_args = {'x_size': project_parameters['x_size'], 'y_size': project_parameters['y_size'],
+                'ulx': project_parameters['xmin'], 'uly': project_parameters['ymax'], 'epsg': project_parameters['epsg'],
+                'dx': project_parameters['dx'], 'dy': project_parameters['dy'], 'outfn': outfn, 'from_dset': skyview_out}
 gdal_save_grid(**skyview_args)

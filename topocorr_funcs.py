@@ -309,7 +309,7 @@ def srb_to_projectEpsg(srb_3hr_vars, project_parameters):
 
     yyyy = srb_3hr_vars['year']
 
-    out_fmt = os.path.join(project_parameters['tmp'], '{0}_{1}_{2}_{3}.tif')#.format(dset, year, yday, utc_hour)
+    out_fmt = os.path.join(project_parameters['tmp_dir'], '{0}_{1}_{2}_{3}.tif')#.format(dset, year, yday, utc_hour)
 
     for i in range(len(srb_3hr_vars['utc_hours'])):
         yday = srb_3hr_vars['ydays'][i]

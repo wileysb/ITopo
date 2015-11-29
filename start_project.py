@@ -28,13 +28,13 @@ import sys
 import yaml
 import math
 import numpy as np
-from topocorr_funcs import Prj_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy, mk_latlon_grids, gdal_load
+from topocorr_funcs import Safe_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy, mk_latlon_grids, gdal_load
 
-project_name = sys.argv[1] # $ python start_project.py prjName
-prj_param_fn = '{}_parameters.yaml'.format(project_name)
+project_name = sys.argv[1] # $ python start_project.py projectName
+project_param_fn = '{}_parameters.yaml'.format(project_name)
 
-if os.path.isfile(prj_param_fn.format(project_name)):
-    print prj_param_fn.format(project_name), 'exists.  To start over, delete or rename the existing file.'
+if os.path.isfile(project_param_fn.format(project_name)):
+    print project_param_fn.format(project_name), 'exists.  To start over, delete or rename the existing file.'
 else:
     ### LOAD PROJECT PARAMETERS ###
     with file('parameters.yaml','r') as f:
@@ -53,11 +53,11 @@ else:
 
 
         ### CREATE DIRS, IF NECESSARY
-        Prj_mkdir(project_parameters['itopo_dir'])
-        Prj_mkdir(project_parameters['tmp_dir'])
-        Prj_mkdir(project_parameters['dem_dir'])
-        Prj_mkdir(project_parameters['BOG_dir'])
-        Prj_mkdir(sunview_dir)
+        Safe_mkdir(project_parameters['itopo_dir'])
+        Safe_mkdir(project_parameters['tmp_dir'])
+        Safe_mkdir(project_parameters['dem_dir'])
+        Safe_mkdir(project_parameters['BOG_dir'])
+        Safe_mkdir(sunview_dir)
 
         project_parameters['init_cmds'] = []
 
@@ -116,7 +116,7 @@ else:
         #   'uly':7961500.0 hardcoded, vs  7962000.0 from function
 
         # Get srb bounding ulx and uly + x_size, y_size
-         # This is only OK as long as corners from prj_extents form geographic max + min values
+         # This is only OK as long as corners from project_extents form geographic max + min values
         t = transform_epsg2epsg(int(project_parameters['epsg']),4326)
         srb_xmin,srb_ymax = t_xy(t,project_parameters['xmin'],project_parameters['ymax'])
         srb_xmax,srb_ymin = t_xy(t,project_parameters['xmax'],project_parameters['ymin'])
@@ -161,7 +161,7 @@ else:
         print 'Making Lat and Lon grids in output projection'
         mk_latlon_grids(**latlon_args)
 
-        with file(prj_param_fn,'w') as f:
+        with file(project_param_fn,'w') as f:
                 yaml.safe_dump(project_parameters,f)
     else:
         print project_name,'not found in parameters.yaml'

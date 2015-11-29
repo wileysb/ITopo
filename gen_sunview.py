@@ -2,7 +2,7 @@
 
 __author__ = 'wiley'
 
-from topocorr_funcs import Prj_mkdir, gdal_load, Cast_shade
+from topocorr_funcs import Safe_mkdir, gdal_load, Cast_shade
 import numpy as np
 import os
 import sys
@@ -12,10 +12,10 @@ import yaml
 
 # from yaml: dem_dir,utm33n_md
 
-project_name = sys.argv[1] # $ python accumulate_skyview.py prjName
+project_name = sys.argv[1] # $ python accumulate_skyview.py projectName
 
-prj_param_fn = '{}_parameters.yaml'.format(project_name)
-with file(prj_param_fn) as f:
+project_param_fn = '{}_parameters.yaml'.format(project_name)
+with file(project_param_fn) as f:
     project_parameters = yaml.safe_load(f)
 
 
@@ -25,9 +25,9 @@ def gdal_save_binary_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, 
                           nanhandle=False, rot0=0, rot1=0):
 
     # Bring projection info from EPSG to WKT string
-    prj = osr.SpatialReference()
-    prj.ImportFromEPSG(epsg)
-    prj_string = prj.ExportToWkt()
+    projection = osr.SpatialReference()
+    projection.ImportFromEPSG(epsg)
+    projection_string = projection.ExportToWkt()
 
      # Create memory dataset
     if outfn == 'MEM':
@@ -43,7 +43,7 @@ def gdal_save_binary_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, 
 
     # Write geotransform, projection, and array to memory dataset
     dst.SetGeoTransform(geo_t)
-    dst.SetProjection(prj_string)
+    dst.SetProjection(projection_string)
     bnd = dst.GetRasterBand(1)
     if nanhandle is not False:
         from_dset[np.isinf(from_dset)] = nanhandle

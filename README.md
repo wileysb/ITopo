@@ -5,14 +5,14 @@ in extent and resolution.
 
 ### Directions for use:
 1. Clone ITopo project to a disk with plenty of space
-2. Create 'prjName' directory within ITopo/
-3. Define 'prjName' parameters in parameters.yaml
- * For best quality control, preload prjName_dem.tif in dem_derivs/. 
+2. Create 'projectName' directory within ITopo/
+3. Define 'projectName' parameters in parameters.yaml
+ * For best quality control, preload projectName_dem.tif in dem_derivs/. 
  * Then you can also leave blank the project's spatial parameters.
-4. run $ python start_project.py prjName
-5. run $ parallel -j numThreads -- < prjDir/BOG.cmds
-6. run $ python accumulate_skyview.py prjName
-7. run $ parallel -j numThreads ./gen_sunview.py prjName {1}::: 0 3 6 9 12 15 18 21
+4. run $ python start_project.py projectName
+5. run $ parallel -j numThreads -- < projectDir/BOG.cmds
+6. run $ python accumulate_skyview.py projectName
+7. run $ parallel -j numThreads ./gen_sunview.py projectName {1}::: 0 3 6 9 12 15 18 21
 
 
 #### Timing
@@ -32,7 +32,7 @@ Possible solution: pick a subregion within Porsgrunn at half cols, half rows? or
 
 ### TODO:
 * Unpack srb
- - [ ] make sure prj['srb_gt'] has rational values (right now x_size and y_size are 0...)
+ - [ ] make sure project['srb_gt'] has rational values (right now x_size and y_size are 0...)
  - [ ] get srb indices [lon_s:lon_e,lat_s:lat_e] from project_parameters['srb_gt']
 * Convert SRB to project resolution (coarse to fine geog, fine geog to project epsg)
 * Check grid products for alignment!

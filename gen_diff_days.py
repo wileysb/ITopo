@@ -5,12 +5,12 @@ __author__ = 'wiley'
 import sys
 import yaml
 
-from topocorr_funcs import unpack_srb_variables, srb_to_prjEpsg
+from topocorr_funcs import unpack_srb_variables, srb_to_projectEpsg
 
-project_name = sys.argv[1] # $ python accumulate_skyview.py prjName
+project_name = sys.argv[1] # $ python accumulate_skyview.py projectName
 
-prj_param_fn = '{}_parameters.yaml'.format(project_name)
-with file(prj_param_fn) as f:
+project_param_fn = '{}_parameters.yaml'.format(project_name)
+with file(project_param_fn) as f:
     project_parameters = yaml.safe_load(f)
 
 
@@ -24,4 +24,4 @@ if __name__ == "__main__":
 
     srb_3hr_vars = unpack_srb_variables(srb_3hr_fn, project_parameters)
 
-    srb_to_prjEpsg(srb_3hr_vars, project_parameters)
+    srb_to_projectEpsg(srb_3hr_vars, project_parameters)

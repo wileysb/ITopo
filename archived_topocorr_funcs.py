@@ -622,7 +622,7 @@ def collect_shade(lat, lon, yday, utc_hour):
 
 
 # Some general purpose or notemaking geospatial functions:
-def Prj_mkdir(dir_path):
+def Safe_mkdir(dir_path):
     '''Create a directory, with a bit of extra syntax.
 
     Check if directory exists, print error and exit if directory cannot be created.
@@ -773,12 +773,12 @@ def gdal_load(dset_fn):
 def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy, nanhandle=False, rot0=0, rot1=0):
 
     # Get from_projection
-    src_prj_string = from_dset.GetProjection()
+    src_projection_string = from_dset.GetProjection()
 
     # Bring projection info from EPSG to WKT string
-    dst_prj = osr.SpatialReference()
-    dst_prj.ImportFromEPSG(epsg)
-    dst_prj_string = dst_prj.ExportToWkt()
+    dst_projection = osr.SpatialReference()
+    dst_projection.ImportFromEPSG(epsg)
+    dst_projection_string = dst_projection.ExportToWkt()
 
     # Create memory dataset
     if outfn=='MEM':
@@ -795,11 +795,11 @@ def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy, nanh
 
     # Write geotransform, projection, and array to memory dataset
     dst.SetGeoTransform( geo_t )
-    dst.SetProjection( dst_prj_string )
+    dst.SetProjection( dst_projection_string )
 
     # can result in negatives? nans?
     res = gdal.ReprojectImage(from_dset, dst, \
-          src_prj_string, dst_prj_string, \
+          src_projection_string, dst_projection_string, \
           gdal.GRA_Cubic) #_Bilinear )
 
     return dst
@@ -854,9 +854,9 @@ def numpy_resample(src_arr, zm=120):
 def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy, nanhandle=False, rot0=0, rot1=0):
 
     # Bring projection info from EPSG to WKT string
-    prj = osr.SpatialReference()
-    prj.ImportFromEPSG(epsg)
-    prj_string = prj.ExportToWkt()
+    projection = osr.SpatialReference()
+    projection.ImportFromEPSG(epsg)
+    projection_string = projection.ExportToWkt()
 
      # Create memory dataset
     if outfn=='MEM':
@@ -874,7 +874,7 @@ def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy, nan
     # Write geotransform, projection, and array to memory dataset
 
     dst.SetGeoTransform( geo_t )
-    dst.SetProjection( prj_string )
+    dst.SetProjection( projection_string )
     bnd = dst.GetRasterBand(1)
     if nanhandle!=False:
         from_dset[np.isinf(from_dset)] = nanhandle

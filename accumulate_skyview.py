@@ -27,10 +27,10 @@ def sum_zen_ring(zen, gridmap):
     return ringview, max_sum
 
 
-project_name = sys.argv[1] # $ python accumulate_skyview.py prjName
+project_name = sys.argv[1] # $ python accumulate_skyview.py projectName
 
-prj_param_fn = '{}_parameters.yaml'.format(project_name)
-with file(prj_param_fn) as f:
+project_param_fn = '{}_parameters.yaml'.format(project_name)
+with file(project_param_fn) as f:
     project_parameters = yaml.safe_load(f)
 
 gridmap = np.loadtxt(project_parameters['BOG'].format(0, 89), skiprows=6, delimiter=' ')

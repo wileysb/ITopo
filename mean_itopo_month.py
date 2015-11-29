@@ -25,7 +25,7 @@ if __name__ == "__main__":
     tmp_dir = os.path.join(project_parameters['tmp_dir'], yyyy+mm)
     in_fmt = os.path.join(tmp_dir, '{0}_{1}_{2}_{3}.tif')  # .format(dset,yyyy,mm,utc_hour)
 
-    out_fmt = os.path.join(project_parameters['out_dir'], '{0}_{1}_{2.tif')  # .format(dset,yyyy,mm)
+    out_fmt = os.path.join(project_parameters['out_dir'], '{0}_{1}_{2}.tif')  # .format(dset,yyyy,mm)
 
     srb_3hr_fn = project_parameters['srb'].format(yyyy, mm)
 

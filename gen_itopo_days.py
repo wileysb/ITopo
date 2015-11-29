@@ -24,7 +24,7 @@ if __name__ == "__main__":
 
     srb_3hr_fn = project_parameters['srb'].format(yyyy,mm)
 
-    srb_3hr_vars = unpack_srb_variables(srb_3hr_fn)
+    srb_3hr_vars = unpack_srb_variables(srb_3hr_fn, project_parameters)
 
     ydays     = srb_3hr_vars['ydays']
     utc_hours = srb_3hr_vars['utc_hours']

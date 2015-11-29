@@ -1,5 +1,7 @@
 #!/usr/bin/python
-
+"""
+About 6 minutes per month, at 100m
+"""
 __author__ = 'wiley'
 
 import sys

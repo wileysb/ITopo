@@ -407,10 +407,10 @@ def unpack_srb_variables(srb_fn, project_parameters):
     # make lat and lon into grids
     lonv, latv = np.meshgrid(lon, lat)
 
-    hr3  = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
-    lon3 = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
-    lat3 = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
-    yday3 = np.ones(sw_sfc_dn.shape,dtype=np.float64)*10
+    hr3  = np.ones(sw_sfc_dn.shape, dtype=np.float64)*10
+    lon3 = np.ones(sw_sfc_dn.shape, dtype=np.float64)*10
+    lat3 = np.ones(sw_sfc_dn.shape, dtype=np.float64)*10
+    yday3 = np.ones(sw_sfc_dn.shape, dtype=np.float64)*10
 
     for i in range(len(utc_hours)):
         lon3[i,:,:] = lonv
@@ -434,15 +434,16 @@ def unpack_srb_variables(srb_fn, project_parameters):
     return srb_vars
 
 
-def srb_to_projectEpsg(srb_3hr_vars, project_parameters):
+def srb_to_projectEpsg(srb_3hr_vars, out_dir, project_parameters):
 
     wgs84lo = project_parameters['srb_gt']
     wgs84hi = project_parameters['srb_hi_gt']
     project_gt = project_parameters['dem_gt']
 
-    yyyy = srb_3hr_vars['year']
+    #yyyy = srb_3hr_vars['year']
+    #mm = srb_3hr_vars['month']
 
-    out_fmt = os.path.join(project_parameters['tmp_dir'], '{0}_{1}_{2}_{3}.tif')#.format(dset, year, yday, utc_hour)
+    out_fmt = os.path.join(out_dir, '{0}_{1}_{2}_{3}.tif')#.format(dset, year, yday, utc_hour)
 
     for i in range(len(srb_3hr_vars['utc_hours'])):
         yday = srb_3hr_vars['ydays'][i]

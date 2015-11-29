@@ -28,4 +28,4 @@ if __name__ == "__main__":
 
     srb_3hr_vars = unpack_srb_variables(srb_3hr_fn, project_parameters)
 
-    srb_to_projectEpsg(srb_3hr_vars, project_parameters)
+    srb_to_projectEpsg(srb_3hr_vars, out_dir, project_parameters)

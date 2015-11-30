@@ -634,7 +634,8 @@ def gdal_resample(outfn, from_dset, epsg, x_size, y_size, ulx, uly, dx, dy,
     return dst
 
 
-def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy, nanhandle=False, rot0=0, rot1=0):
+def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy,
+                   dtype=gdal.GDT_Float64, nanhandle=False, rot0=0, rot1=0):
 
     # Bring projection info from EPSG to WKT string
     projection = osr.SpatialReference()
@@ -644,11 +645,11 @@ def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy, nan
      # Create memory dataset
     if outfn=='MEM':
         mem_drv = gdal.GetDriverByName('MEM')
-        dst = mem_drv.Create('',x_size, y_size, 1, gdal.GDT_Float64)
+        dst = mem_drv.Create('',x_size, y_size, 1, dtype)
 
     else:
         gtiff_drv = gdal.GetDriverByName('GTiff')
-        dst = gtiff_drv.Create(outfn,x_size, y_size, 1, gdal.GDT_Float64)
+        dst = gtiff_drv.Create(outfn,x_size, y_size, 1, dtype)
 
     # Assemble geotransform
     geo_t = ( ulx, dx, rot0,
@@ -659,7 +660,7 @@ def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy, nan
     dst.SetGeoTransform( geo_t )
     dst.SetProjection( projection_string )
     bnd = dst.GetRasterBand(1)
-    if nanhandle!=False:
+    if nanhandle != False:
         from_dset[np.isinf(from_dset)] = nanhandle
         from_dset[np.isnan(from_dset)] = nanhandle
         bnd.SetNoDataValue(nanhandle)
@@ -668,10 +669,16 @@ def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy, nan
     return dst
 
 
-def transform_epsg2epsg(src_epsg,dst_epsg):
-    """t = transform_epsg2epsg(src_epsg,dst_epsg)
+def transform_epsg2epsg(src_epsg, dst_epsg):
+    """
+    t = transform_epsg2epsg(src_epsg,dst_epsg)
     Both src_epsg and dst_epsg should be a valid integer
-    Authority Code identifying a unique coordinate reference system"""
+    Authority Code identifying a unique coordinate reference system
+
+    :param src_epsg:
+    :param dst_epsg:
+    :return:
+    """
     src = osr.SpatialReference()
     src.ImportFromEPSG(src_epsg)
 
@@ -682,9 +689,16 @@ def transform_epsg2epsg(src_epsg,dst_epsg):
     return t
 
 
-def t_xy(t,x,y):
-    '''transform coordinates (x,y) according to transform t
-    returns x,y after given transformation'''
+def t_xy(t, x, y):
+    '''
+    transform coordinates (x,y) according to transform t
+    returns x,y after given transformation
+
+    :param t:
+    :param x:
+    :param y:
+    :return:
+    '''
     point = ogr.Geometry(ogr.wkbPoint)
     point.AddPoint(x,y)
     point.Transform(t)

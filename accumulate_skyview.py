@@ -7,8 +7,8 @@ but when regarded as 'viewangles' they suddenly become very meaningful.
 Each grid is then a 'view' test of whether that sector of the sky is
 visible from each point in the grid.  The sum of visible angles is weighted
 by cosine(90-zenith) to account for smaller sectors per degree
-as zenith angle approaches noon. This weighted sum, divided by 
-the maximum possible sum, gives the % sky viewable from each point in the grid"""
+as zenith angle approaches noon. This weighted sum, divided by the maximum 
+possible sum, gives the percent sky viewable from each point in the grid"""
 
 import yaml
 import gdal

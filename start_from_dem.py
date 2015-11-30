@@ -177,7 +177,7 @@ else:
     sunview_cmds_fn = os.path.join(project_parameters['itopo_dir'], 'sunview_{0}.cmds'.format(project_name))
     with open(sunview_cmds_fn, 'w') as f:
         for utc_hr in range(0, 22, 3):
-            f.writeline('python gen_sunview.py {0} {1}\n'.format(project_name, utc_hr))
+            f.write('python gen_sunview.py {0} {1}\n'.format(project_name, utc_hr))
 
     # Prepare itopo_1month.sh parallel arguments
     months_cmds_fn = os.path.join(project_parameters['itopo_dir'], 'itopo_months_{0}.cmds'.format(project_name))

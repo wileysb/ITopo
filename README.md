@@ -4,20 +4,25 @@ Trying to make the code more streamlined and flexible, rather than locked
 in extent and resolution.
 
 ### Directions for use:
-1. Clone ITopo project to a disk with plenty of space
-2. Create 'projectName' directory within ITopo/
-3. Define 'projectName' parameters in parameters.yaml
+1'a. Create 'projectName' directory within ITopo/
+1'b. Define 'projectName' parameters in parameters.yaml
  * For best quality control, preload projectName_dem.tif in dem_derivs/. 
  * Then you can also leave blank the project's spatial parameters.
-4. run $ python start_project.py projectName
-5. run $ parallel -j numThreads -- < projectDir/BOG.cmds
-6. run $ python accumulate_skyview.py projectName
-7. run $ parallel -j numThreads ./gen_sunview.py projectName {1}::: 0 3 6 9 12 15 18 21
+1'c. run $ python start_project.py projectName
+
+OR
+
+1. run $ python start_from_dem.py projectName /path/to/src_dem.tif
+
+2. run $ parallel -j numThreads -- < projectDir/BOG.cmds
+3. run $ python accumulate_skyview.py projectName
+4. run $ parallel -j numThreads ./gen_sunview.py projectName {1}::: 0 3 6 9 12 15 18 21
 
 Implement workflow: 
-8.  python gen_diff_days.py projectName yyyy mm
-9.  python gen_itopo_days.py projectName yyyy mm
-10. python mean_itopo_month.py projectName yyyy mm
+5.  python gen_diff_days.py projectName yyyy mm
+6.  python gen_itopo_days.py projectName yyyy mm
+7. python mean_itopo_month.py projectName yyyy mm
+8. Free space with rm -rf projectName/tmp/yyyymm
 
 #### Timing
 Cols x Rows | Step 5^  | Step 6 | Step 7^

@@ -440,18 +440,17 @@ def srb_to_projectEpsg(srb_3hr_vars, out_dir, project_parameters):
     wgs84hi = project_parameters['srb_hi_gt']
     project_gt = project_parameters['dem_gt']
 
-    #yyyy = srb_3hr_vars['year']
-    #mm = srb_3hr_vars['month']
+    yyyy = srb_3hr_vars['year']
+    # mm = srb_3hr_vars['month']
 
-    out_fmt = os.path.join(out_dir, '{0}_{1}_{2}_{3}.tif')#.format(dset, year, yday, utc_hour)
+    out_fmt = os.path.join(out_dir, '{0}_{1}_{2}_{3}.tif')  # .format(dset, year, yday, utc_hour)
 
     for i in range(len(srb_3hr_vars['utc_hours'])):
         yday = srb_3hr_vars['ydays'][i]
         utc_hour = srb_3hr_vars['utc_hours'][i]
 
-
         dset = 'sw_sfc_dn'
-        wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i,:,:])
+        wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i, :, :])
 
         # interpolate from degree resolution to 30arc seconds (0.5arc minutes = 120 per degree)
         wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=project_parameters['srb_zoom_factor'])
@@ -465,7 +464,7 @@ def srb_to_projectEpsg(srb_3hr_vars, out_dir, project_parameters):
         utm_dset = gdal_resample(**project_gt)
 
         dset = 'diffuse'
-        wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i,:,:])
+        wgs84lo['from_dset'] = np.flipud(srb_3hr_vars[dset][i, :, :])
 
         # interpolate from degree resolution to 30arc seconds (0.5arc minutes = 120 per degree)
         wgs84hi['from_dset'] = zoom(wgs84lo['from_dset'], zoom=project_parameters['srb_zoom_factor'])
@@ -652,8 +651,8 @@ def gdal_save_grid(from_dset, outfn, epsg, x_size, y_size, ulx, uly, dx, dy,
         dst = gtiff_drv.Create(outfn,x_size, y_size, 1, dtype)
 
     # Assemble geotransform
-    geo_t = ( ulx, dx, rot0,
-              uly, rot1, dy )
+    geo_t = (ulx, dx, rot0,
+             uly, rot1, dy)
 
     # Write geotransform, projection, and array to memory dataset
 

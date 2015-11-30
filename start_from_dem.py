@@ -194,4 +194,5 @@ else:
     with file(project_param_fn, 'w') as f:
         yaml.safe_dump(project_parameters, f)
 
+    print 'chmod 744 ./'+project_name+'.sh'
     print './'+project_name+'.sh', 'numThreads'

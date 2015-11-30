@@ -194,5 +194,6 @@ else:
     with file(project_param_fn, 'w') as f:
         yaml.safe_dump(project_parameters, f)
 
+    print 'Choose the number of processors to dedicate (numThreads) then execute these two commands to continue:'
     print 'chmod 744 ./'+project_name+'.sh'
     print './'+project_name+'.sh', 'numThreads'

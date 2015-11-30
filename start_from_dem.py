@@ -178,7 +178,7 @@ else:
     bash_cmds.append('parallel -j $1 -- < {0}/BOG.cmds\n'.format(project_name))
     bash_cmds.append('python accumulate_skyview.py '+project_name+'\n')
     bash_cmds.append('parallel -j $1 ./gen_sunview.py '+project_name+' {1}::: 0 3 6 9 12 15 18 21\n')
-    bash_cmds.append('parallel -j $1 -- < itopo_months_{0}.cmds\n'.format(project_name))
+    bash_cmds.append('parallel -j $1 -- < {0}\n'.format(months_cmds_fn))
 
     months_to_run = []
     for mm in project_parameters['months']:

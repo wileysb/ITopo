@@ -37,7 +37,7 @@ if __name__ == "__main__":
     dsets = {}
 
     for dset in ['itopo', 'diffuse', 'sw_sfc_dn']:
-        fn_pattern = os.path.join(project_parameters['out_dir'], dset+'_*.tif')
+        fn_pattern = os.path.join(tmp_dir, dset+'_*.tif')
         dset_files = glob.glob(fn_pattern)
         arr = np.ones((len(dset_files), project_parameters['dem_gt']['y_size'],
                        project_parameters['dem_gt']['x_size']), dtype='float')

@@ -75,32 +75,20 @@ else:
     project_parameters['init_cmds'] = []
 
 
-    ### Clip DEM ###
-    project_parameters['dem'] = os.path.join(project_parameters['dem_dir'], project_name+'_dem.tif')
-
-    if os.path.isfile(project_parameters['dem']):
-        project_parameters['dem_gt']   = Get_gt_dict(project_parameters['dem'])
-        project_parameters['x_size'] = project_parameters['dem_gt']['x_size']
-        project_parameters['y_size'] = project_parameters['dem_gt']['y_size']
-        project_parameters['epsg'] =  project_parameters['dem_gt']['epsg']
-        project_parameters['dx'] = project_parameters['dem_gt']['dx']
-        project_parameters['dy']= project_parameters['dem_gt']['dy']
-        project_parameters['xmin']= project_parameters['dem_gt']['ulx']
-        project_parameters['ymax']= project_parameters['dem_gt']['uly']
-        project_parameters['ymin']= project_parameters['ymax'] + project_parameters['dy']*project_parameters['dem_gt']['y_size']
-        project_parameters['xmax']= project_parameters['xmin'] + project_parameters['dx']*project_parameters['dem_gt']['x_size']
-    else:
+    ### Load Spatial Parameters from DEM ###
+    if not os.path.isfile(project_parameters['dem']):
         shutil.copyfile(dem_fn, project_parameters['dem'])
-        project_parameters['dem_gt']   = Get_gt_dict(project_parameters['dem'])
-        project_parameters['x_size'] = project_parameters['dem_gt']['x_size']
-        project_parameters['y_size'] = project_parameters['dem_gt']['y_size']
-        project_parameters['epsg'] =  project_parameters['dem_gt']['epsg']
-        project_parameters['dx'] = project_parameters['dem_gt']['dx']
-        project_parameters['dy']= project_parameters['dem_gt']['dy']
-        project_parameters['xmin']= project_parameters['dem_gt']['ulx']
-        project_parameters['ymax']= project_parameters['dem_gt']['uly']
-        project_parameters['ymin']= project_parameters['ymax'] + project_parameters['dy']*project_parameters['dem_gt']['y_size']
-        project_parameters['xmax']= project_parameters['xmin'] + project_parameters['dx']*project_parameters['dem_gt']['x_size']
+
+    project_parameters['dem_gt']   = Get_gt_dict(project_parameters['dem'])
+    project_parameters['x_size'] = project_parameters['dem_gt']['x_size']
+    project_parameters['y_size'] = project_parameters['dem_gt']['y_size']
+    project_parameters['epsg'] =  project_parameters['dem_gt']['epsg']
+    project_parameters['dx'] = project_parameters['dem_gt']['dx']
+    project_parameters['dy']= project_parameters['dem_gt']['dy']
+    project_parameters['xmin']= project_parameters['dem_gt']['ulx']
+    project_parameters['ymax']= project_parameters['dem_gt']['uly']
+    project_parameters['ymin']= project_parameters['ymax'] + project_parameters['dy']*project_parameters['dem_gt']['y_size']
+    project_parameters['xmax']= project_parameters['xmin'] + project_parameters['dx']*project_parameters['dem_gt']['x_size']
 
         # set xmin,ymin,xmax,ymax,dx,dy from same
     # Slope and Aspect

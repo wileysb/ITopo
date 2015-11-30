@@ -63,7 +63,7 @@ else:
         print "USAGE: python start_from_dem.py projectName /path/to/src_dem.tif"
         sys.exit(1)
 
-
+    print 'CREATE dirs'
     ### CREATE DIRS, IF NECESSARY
     Safe_mkdir(project_parameters['itopo_dir'])
     Safe_mkdir(project_parameters['tmp_dir'])
@@ -74,11 +74,12 @@ else:
 
     project_parameters['init_cmds'] = []
 
-
+    print 'COPY dem'
     ### Load Spatial Parameters from DEM ###
     if not os.path.isfile(project_parameters['dem']):
         shutil.copyfile(dem_fn, project_parameters['dem'])
 
+    print 'LOAD info from dem'
     project_parameters['dem_gt']   = Get_gt_dict(project_parameters['dem'])
     project_parameters['x_size'] = project_parameters['dem_gt']['x_size']
     project_parameters['y_size'] = project_parameters['dem_gt']['y_size']
@@ -90,7 +91,7 @@ else:
     project_parameters['ymin']= project_parameters['ymax'] + project_parameters['dy']*project_parameters['dem_gt']['y_size']
     project_parameters['xmax']= project_parameters['xmin'] + project_parameters['dx']*project_parameters['dem_gt']['x_size']
 
-        # set xmin,ymin,xmax,ymax,dx,dy from same
+    print 'MAKE dem_derivs'
     # Slope and Aspect
     project_parameters['asp'] = os.path.join(project_parameters['dem_dir'],project_name+'_asp.tif')
     project_parameters['slp'] = os.path.join(project_parameters['dem_dir'],project_name+'_slp.tif')

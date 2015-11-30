@@ -21,8 +21,8 @@ OR
 Implement workflow: 
 5.  python gen_diff_days.py projectName yyyy mm
 6.  python gen_itopo_days.py projectName yyyy mm
-7. python mean_itopo_month.py projectName yyyy mm
-8. Free space with rm -rf projectName/tmp/yyyymm
+7.  python mean_itopo_month.py projectName yyyy mm
+8.  Free space with rm -rf projectName/tmp/yyyymm
 
 #### Timing
 Cols x Rows | Step 5^  | Step 6 | Step 7^

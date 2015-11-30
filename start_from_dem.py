@@ -166,5 +166,23 @@ else:
     print 'Making Lat and Lon grids in output projection'
     mk_latlon_grids(**latlon_args)
 
+    bash_cmds = ['#!/usr/bin/env bash','',]
+    months_cmds_fn = os.path.join(project_parameters['itopo_dir'],'itopo_months_{0}.cmds'.format(project_name))
+    bash_cmds.append('parallel -j $1 -- < {0}/BOG.cmds'.format(project_name))
+    bash_cmds.append('python accumulate_skyview.py '+project_name)
+    bash_cmds.append('parallel -j $1 ./gen_sunview.py '+project_name+' {1}::: 0 3 6 9 12 15 18 21')
+    bash_cmds.append('parallel -j $1 -- < itopo_months_{0}.cmds'.format(project_name))
+
+    months_to_run = []
+    for mm in project_parameters['months']:
+        for year in range(project_parameters['first_year'],project_parameters['last_year']+1):
+            months_to_run.append('./itopo_1month.sh {0} {1} {2}'.format(project_name, year, str(mm).zfill(2)))
+
+    with open(months_cmds_fn) as f:
+        f.writelines(months_to_run)
+
+    with open(project_name+'.sh','w') as f:
+        f.writelines(bash_cmds)
+
     with file(project_param_fn,'w') as f:
         yaml.safe_dump(project_parameters,f)

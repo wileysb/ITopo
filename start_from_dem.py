@@ -178,7 +178,7 @@ else:
         for year in range(project_parameters['first_year'],project_parameters['last_year']+1):
             months_to_run.append('./itopo_1month.sh {0} {1} {2}'.format(project_name, year, str(mm).zfill(2)))
 
-    with open(months_cmds_fn) as f:
+    with open(months_cmds_fn, 'w') as f:
         f.writelines(months_to_run)
 
     with open(project_name+'.sh','w') as f:

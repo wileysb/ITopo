@@ -184,7 +184,7 @@ else:
     months_to_run = []
     for mm in project_parameters['months']:
         for year in range(project_parameters['first_year'], project_parameters['last_year']+1):
-            months_to_run.append('./itopo_1month.sh {0} {1} {2}\n'.format(project_name, year, str(mm).zfill(2)))
+            months_to_run.append('./itopo_1month.sh {0} {1} {2} $$ rm -rf {0}/tmp/{1}{2} \n'.format(project_name, year, str(mm).zfill(2)))
 
     with open(months_cmds_fn, 'w') as f:
         f.writelines(months_to_run)

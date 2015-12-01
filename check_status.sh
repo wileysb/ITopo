@@ -31,7 +31,7 @@ else
 fi
 
 # sunview
-if [ $(ls -lh $1/dem_derivs/sunview/*.tif | wc -l) -eq 2928]
+if [[ $(ls -lh $1/dem_derivs/sunview/*.tif | wc -l) -eq 2928]]
 then
     echo "Sunview cache is complete; turbo activated!"
 else

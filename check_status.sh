@@ -32,9 +32,9 @@ fi
 
 # sunview
 sunview_cache_size=$(ls -lh $1/dem_derivs/sunview/*.tif | wc -l)
-if [ $sunview_cache_size -eq 2928]
+if [[ $sunview_cache_size -eq 2928 ]]
 then
-    echo "Sunview cache is complete; turbo activated!"
+    echo "Sunview cache is complete; turbo activated"
 else
     echo "**Sunview cache incomplete; itopo will have to dynamically cast shade at each timestep"
 fi

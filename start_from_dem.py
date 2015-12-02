@@ -34,7 +34,7 @@ __author__ = 'Wiley Bogren'
 
 project_name = sys.argv[1]  # $ python start_project.py projectName
 dem_fn = sys.argv[2]
-project_param_fn = '{}_parameters.yaml'.format(project_name)
+project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
 
 if os.path.isfile(project_param_fn.format(project_name)):
     print project_param_fn.format(project_name), 'exists.  To start over, delete or rename the existing file.'
@@ -50,6 +50,7 @@ else:
     project_parameters['tmp_dir'] = os.path.join(project_parameters['itopo_dir'], 'tmp/')
     project_parameters['dem_dir'] = os.path.join(project_parameters['itopo_dir'], 'dem_derivs/')
     project_parameters['dem'] = os.path.join(project_parameters['dem_dir'], project_name+'_dem.tif')
+    project_parameters['sky'] = os.path.join(project_parameters['dem_dir'], project_name+'_skyview.tif')
     project_parameters['BOG_dir'] = os.path.join(project_parameters['dem_dir'], 'BOGs')
     project_parameters['out_dir'] = os.path.join(project_parameters['itopo_dir'], 'monthly_means')
     project_parameters['BOG'] = os.path.join(project_parameters['BOG_dir'], 'az{0}zen{1}.asc')#.format(solar_az,solar_zen)
@@ -197,12 +198,13 @@ else:
     bash_cmds.append('parallel -j $1 -- < {0}\n'.format(sunview_cmds_fn))
     bash_cmds.append('parallel -j $1 -- < {0}\n'.format(months_cmds_fn))
 
-    with open(project_name+'.sh', 'w') as f:
+    with open(project_name+'/'+project_name+'.sh', 'w') as f:
         f.writelines(bash_cmds)
 
     with file(project_param_fn, 'w') as f:
         yaml.safe_dump(project_parameters, f)
 
-    print 'Choose the number of processors to dedicate (numThreads) then execute these two commands to continue:'
+    print 'Choose the number of processors to dedicate (numThreads) then execute these three commands to continue:'
+    print 'cd',project_name
     print 'chmod 744 ./'+project_name+'.sh'
     print './'+project_name+'.sh', 'numThreads'

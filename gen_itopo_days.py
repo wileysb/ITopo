@@ -10,7 +10,7 @@ from topocorr_funcs import unpack_srb_variables, Cast_shade, Apply_topo_corr,gda
 
 project_name = sys.argv[1] # $ python accumulate_skyview.py projectName
 
-project_param_fn = '{}_parameters.yaml'.format(project_name)
+project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
 with file(project_param_fn) as f:
     project_parameters = yaml.safe_load(f)
 
@@ -30,31 +30,31 @@ if __name__ == "__main__":
     utc_hours = srb_3hr_vars['utc_hours']
 
     # load slope, aspect, lat, lon, skyview
-    slope_fn = project_parameters['slp']  #  os.path.join(project_parameters['dem_dir'], 'gtopo30slp_utm33n.asc')
-    aspect_fn = project_parameters['asp']  #  os.path.join(project_parameters['dem_dir'], 'gtopo30asp_utm33n.asc')
-    lat_fn = project_parameters['lat']  #  os.path.join(project_parameters['dem_dir'], 'gtopo30lat_utm33n.asc')
-    lon_fn = project_parameters['lon']  #  os.path.join(project_parameters['dem_dir'], 'gtopo30lon_utm33n.asc')
-    sky_fn = os.path.join(project_parameters['dem_dir'],project_name + '_skyview.tif')  #  os.path.join(project_parameters['dem_dir'], 'gtopo30sky_utm33n.asc')
+    slope_fn = project_parameters['slp']
+    aspect_fn = project_parameters['asp']
+    lat_fn = project_parameters['lat']
+    lon_fn = project_parameters['lon']
+    sky_fn = project_parameters['sky']
 
-    slope  = gdal_load(slope_fn)  # np.loadtxt(slope_fn,skiprows=6,delimiter=' ')
-    aspect = gdal_load(aspect_fn) # np.loadtxt(aspect_fn,skiprows=6,delimiter=' ')
-    lat    = gdal_load(lat_fn)    # np.loadtxt(lat_fn,skiprows=6,delimiter=' ')
-    lon    = gdal_load(lon_fn)    # np.loadtxt(lon_fn,skiprows=6,delimiter=' ')
-    skyview= gdal_load(sky_fn)    #np.loadtxt(sky_fn,skiprows=6,delimiter=' ')
+    slope  = gdal_load(slope_fn)
+    aspect = gdal_load(aspect_fn)
+    lat    = gdal_load(lat_fn)
+    lon    = gdal_load(lon_fn)
+    skyview= gdal_load(sky_fn)
 
     for i in range(len(ydays)):
         yday = ydays[i]
         utc_hour = utc_hours[i]
 
-        if os.path.isfile(shade_fmt.format(yday,utc_hour)):
-            shade = gdal_load(shade_fmt.format(yday,utc_hour)) # turbo!
+        if os.path.isfile(shade_fmt.format(yday, utc_hour)):
+            shade = gdal_load(shade_fmt.format(yday, utc_hour)) # turbo!
         else:
             shade = Cast_shade(lat, lon, yday, utc_hour)    # not-turbo :-(
 
-        #  load_params = {'dset':'sw_sfc_dn','yyyy':yyyy,'yday':yday,'utc_hour':utc_hour, 'tif_dir':out_dir}
-        sw_sfc_dn_utm = gdal_load(file_fmt.format('sw_sfc_dn',yyyy,yday,utc_hour))  #ld_srb_utm33(**load_params)
-        #load_params['dset'] = 'diffuse'
-        diffuse_utm = gdal_load(file_fmt.format('diffuse',yyyy,yday,utc_hour))  # ld_srb_utm33(**load_params)
+
+        sw_sfc_dn_utm = gdal_load(file_fmt.format('sw_sfc_dn',yyyy,yday,utc_hour))
+
+        diffuse_utm = gdal_load(file_fmt.format('diffuse',yyyy,yday,utc_hour))
         diffuse_utm[diffuse_utm>1]=1
 
 

@@ -30,7 +30,7 @@ def sum_zen_ring(zen, gridmap):
 
 project_name = sys.argv[1]  # $ python accumulate_skyview.py projectName
 
-project_param_fn = '{}_parameters.yaml'.format(project_name)
+project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
 with file(project_param_fn) as f:
     project_parameters = yaml.safe_load(f)
 
@@ -38,7 +38,7 @@ gridmap = np.loadtxt(project_parameters['BOG'].format(0, 89), skiprows=6, delimi
 
 skyview = np.zeros_like(gridmap)
 max_sum = np.zeros_like(gridmap)
-outfn = os.path.join(project_parameters['dem_dir'], project_name + '_skyview.tif')
+outfn = project_parameters['sky']
 zen_over_horizon = 90-project_parameters['steepest_slope']
 print 'Accumulating skyview, highest possible horizon:', project_parameters['steepest_slope']
 for zen in range(1, 90):

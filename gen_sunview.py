@@ -11,9 +11,9 @@ import yaml
 
 # from yaml: dem_dir,utm33n_md
 
-project_name = sys.argv[1] # $ python accumulate_skyview.py projectName
+project_name = sys.argv[1]
 
-project_param_fn = '{}_parameters.yaml'.format(project_name)
+project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
 with file(project_param_fn) as f:
     project_parameters = yaml.safe_load(f)
 

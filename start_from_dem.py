@@ -34,7 +34,7 @@ __author__ = 'Wiley Bogren'
 
 project_name = sys.argv[1]  # $ python start_project.py projectName
 dem_fn = sys.argv[2]
-project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
+project_param_fn = '{}_parameters.yaml'.format(project_name)
 
 if os.path.isfile(project_param_fn.format(project_name)):
     print project_param_fn.format(project_name), 'exists.  To start over, delete or rename the existing file.'
@@ -198,13 +198,12 @@ else:
     bash_cmds.append('parallel -j $1 -- < {0}\n'.format(sunview_cmds_fn))
     bash_cmds.append('parallel -j $1 -- < {0}\n'.format(months_cmds_fn))
 
-    with open(project_name+'/'+project_name+'.sh', 'w') as f:
+    with open(project_name+'.sh', 'w') as f:
         f.writelines(bash_cmds)
 
     with file(project_param_fn, 'w') as f:
         yaml.safe_dump(project_parameters, f)
 
-    print 'Choose the number of processors to dedicate (numThreads) then execute these three commands to continue:'
-    print 'cd',project_name
+    print 'Choose the number of processors to dedicate (numThreads) then execute these two commands to continue:'
     print 'chmod 744 ./'+project_name+'.sh'
     print './'+project_name+'.sh', 'numThreads'

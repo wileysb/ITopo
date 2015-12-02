@@ -334,35 +334,32 @@ def Get_diffuse_fraction(sw_sfc_dn, sw_toa_dn, utc_hour, yday,lat, lon):
 
 # Workflow (scriptlike) functions
 def Cast_shade(project_parameters, lat, lon, yday, utc_hour):
-    shade_map = np.ones(lat.shape,dtype='int')
+    shade_map = np.zeros(lat.shape, dtype='int')
     zen_over_horizon = 90-project_parameters['steepest_slope']
 
-    #shade_fmt = os.path.join(shade_dir,'solaraz{0}solarzen{1}.asc')
-
-    hour = Get_utc_offset(lon) + utc_hour # 'local time in hours' #
+    hour = Get_utc_offset(lon) + utc_hour  # 'local time in hours'
     sza_fl = (Get_solar_elevation(lat, yday, hour, return_sza=True))
     decl = Get_solar_declination(yday)
     h_s = Get_solar_hour_angle(hour)
     s_az_fl = Get_solar_azi(h_s, lat, sza_fl, decl)
 
     # make 'em integers
-    sza = np.round(sza_fl,0)
-    s_az = np.round(s_az_fl,0)
+    sza = np.round(sza_fl, 0)
+    s_az = np.round(s_az_fl, 0)
 
     az = np.unique(s_az)
-    zen= np.unique(sza)
+    zen = np.unique(sza)
 
     for solar_zen in zen:
-        if solar_zen<89:
+        if solar_zen <= 89:
             for solar_az in az:
-                mask = ((sza==solar_zen)&(s_az==solar_az))
+                mask = ((sza == solar_zen) & (s_az == solar_az))
                 if mask.any():
-                    # bog = np.loadtxt(project_parameters['BOG'].format(az, zen), skiprows=6, delimiter=' ')
-                    if solar_zen > zen_over_horizon:
-                        shade = gdal_load(project_parameters['BOG'].format(int(solar_az),int(solar_zen))).astype('int') #,skiprows=6,dtype='bool',delimiter=' ')
+                    if solar_zen >= zen_over_horizon:
+                        shade = gdal_load(project_parameters['BOG'].format(int(solar_az), int(solar_zen))).astype('int')
                     else:
-                        shade = np.ones_like(lat) # not zeros?
-                    shade_map[mask]=shade[mask]
+                        shade = np.ones_like(lat)  # not zeros?
+                    shade_map[mask] = shade[mask]
 
     return shade_map
 
@@ -492,7 +489,7 @@ def Get_solar_hour_angle(hr):
     t = hours after local noon 
     '''
     t = hr-12
-    h_s = 15*t # 15 == 360 degrees / 24 hours == sun's rate of rotation around azimuth
+    h_s = 15*t  # 15 == 360 degrees / 24 hours == sun's rate of rotation around azimuth
     return h_s
 
 

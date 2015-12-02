@@ -34,7 +34,7 @@ if __name__ == "__main__":
     aspect_fn = project_parameters['asp']  #  os.path.join(project_parameters['dem_dir'], 'gtopo30asp_utm33n.asc')
     lat_fn = project_parameters['lat']  #  os.path.join(project_parameters['dem_dir'], 'gtopo30lat_utm33n.asc')
     lon_fn = project_parameters['lon']  #  os.path.join(project_parameters['dem_dir'], 'gtopo30lon_utm33n.asc')
-    sky_fn = os.path.join(project_parameters['dem_dir'],project_name + '_skyview.asc')  #  os.path.join(project_parameters['dem_dir'], 'gtopo30sky_utm33n.asc')
+    sky_fn = os.path.join(project_parameters['dem_dir'],project_name + '_skyview.tif')  #  os.path.join(project_parameters['dem_dir'], 'gtopo30sky_utm33n.asc')
 
     slope  = gdal_load(slope_fn)  # np.loadtxt(slope_fn,skiprows=6,delimiter=' ')
     aspect = gdal_load(aspect_fn) # np.loadtxt(aspect_fn,skiprows=6,delimiter=' ')

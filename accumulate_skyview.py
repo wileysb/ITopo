@@ -38,7 +38,7 @@ gridmap = np.loadtxt(project_parameters['BOG'].format(0, 89), skiprows=6, delimi
 
 skyview = np.zeros_like(gridmap)
 max_sum = np.zeros_like(gridmap)
-outfn = os.path.join(project_parameters['dem_dir'], project_name + '_skyview.asc')
+outfn = os.path.join(project_parameters['dem_dir'], project_name + '_skyview.tif')
 zen_over_horizon = 90-project_parameters['steepest_slope']
 print 'Accumulating skyview, highest possible horizon:', project_parameters['steepest_slope']
 for zen in range(1, 90):

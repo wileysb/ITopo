@@ -3,7 +3,7 @@ srb_dir: /space/wib_data/CLIMATE/NASA/srb_3hr/
 itopo_dir: /home/sl_wib/ITopo/
 first_year: 2006
 last_year: 2006
-months:  03 06 11
+months:  03 06 12
 
 
 

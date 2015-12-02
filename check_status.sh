@@ -23,7 +23,7 @@ else
 fi
 
 # skyview
-if [[ -n $1/dem_derivs/$1_skyview.asc ]] && [[ -r $1/dem_derivs/$1_skyview.asc ]]
+if [[ -n $1/dem_derivs/$1_skyview.tif ]] && [[ -r $1/dem_derivs/$1_skyview.tif ]]
 then
     echo "Skyview exists"
 else

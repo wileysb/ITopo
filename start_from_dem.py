@@ -34,7 +34,7 @@ __author__ = 'Wiley Bogren'
 
 project_name = sys.argv[1]  # $ python start_project.py projectName
 dem_fn = sys.argv[2]
-project_param_fn = '{}_parameters.yaml'.format(project_name)
+project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
 
 if os.path.isfile(project_param_fn.format(project_name)):
     print project_param_fn.format(project_name), 'exists.  To start over, delete or rename the existing file.'

@@ -204,6 +204,10 @@ else:
     with file(project_param_fn, 'w') as f:
         yaml.safe_dump(project_parameters, f)
 
+    print ' '
     print 'Choose the number of processors to dedicate (numThreads) then execute these two commands to continue:'
-    print 'chmod 744 ./'+project_name+'.sh'
-    print './'+project_name+'.sh', 'numThreads'
+    print './cast_shade.sh', project_name, 'numThreads'
+    print 'FOLLOWED BY'
+    print './itopo_1month.sh', project_name, 'yyyy mm'
+    print 'OR'
+    print 'parallel -j numThreads -N 2 ./itopo_1month.sh', project_name,'::: yyyy mm yyyy mm'

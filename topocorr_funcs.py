@@ -95,11 +95,10 @@ def Apply_topo_corr(sw_sfc_dn, p_diffuse, shade, slope, aspect, skyview, lat, lo
     cos_i_params     = {'delta_s':delta_s, 'h_s':h_s, 'lat':lat, 'slope':slope, 'aspect':aspect}
     cos_i_corr = Get_corr(**cos_i_params)
 
+    # Everything is shaded when the sun is setting
     sza_fl = (Get_solar_elevation(lat, yday, local_hr, return_sza=True))
     sza_int = np.round(sza_fl,0)
-
-    sunset = sza_int < 89
-
+    sunset = sza_int > 89
     shade[sunset] = 0
 
     p_direct = 1-p_diffuse

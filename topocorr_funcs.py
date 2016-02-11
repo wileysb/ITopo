@@ -545,6 +545,20 @@ def Get_solar_elevation(lat, yday, hour, return_sza=False):
         return solar_elevation
 
 
+def Get_normal_vector(azimuth,altitude):
+    '''vec = Get_normal_vector(azimuth,altitude) # azi and alt in degrees
+    
+    Get the normal unit vector describing the direction indicated by azimuth and altitude.'''
+    azimuth = np.deg2rad(azimuth)
+    altitude = np.deg2rad(altitude)
+
+    x = np.sin(azimuth)*np.cos(altitude)
+    y = np.cos(azimuth)*np.cos(altitude)*-1 # sign switch to agree with R Insol vectors
+    z = np.sin(altitude)
+
+    return (x,y,z)
+
+
 # Some general purpose or notemaking geospatial functions:
 def Safe_mkdir(dir_path):
     '''Create a directory, with a bit of extra syntax.

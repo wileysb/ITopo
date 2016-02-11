@@ -33,17 +33,17 @@ pydem = dem_b.ReadAsArray()
 rdem = r_raster.raster(demfn)
 
 # Create horizon_grid
-horizon = np.zeros_like(pydem)
-altitude = 1
-all_clear = horizon.all()
+horizon = np.zeros_like(pydem) - 1
+altitude = 0 
+all_clear = (horizon+1).all()
 while not all_clear:
     sol_vector = r_insol.normalvector(90-altitude,azi)
     shd = r_insol.doshade(rdem,sol_vector)
     rpy2shd = np.array(r_raster.as_matrix(shd))
-    horizon[(horizon==0)  & (rpy2shd==1)] = altitude
+    horizon[(horizon==-1)  & (rpy2shd==1)] = altitude
     print str(altitude)+':', int(rpy2shd.size - rpy2shd.sum())
     altitude+=1
-    all_clear = horizon.all()
+    all_clear = (horizon+1).all()
    
 # write out horizon.
 horizon_args = {'x_size': project_parameters['x_size'], 'y_size': project_parameters['y_size'],

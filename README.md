@@ -21,5 +21,6 @@ in extent and resolution.
 * polish project workflow, topographic correction from DEM to monthly climatology
 * replace R shade with PyForShade
 * Implement quicker, more compact shade:
- - Single shade raster for each azimuth, storing int values of 'horizon zenith'
+ - [x] Single shade raster for each azimuth, storing int values of 'horizon zenith':
+ - $ parallel -j 12 python find_horizon.py gjende100m {} ::: {0..359}
  - for each azimuth, start with 90 zen and work up until the first shade.all()==1 (no shaded terrain)

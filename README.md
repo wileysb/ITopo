@@ -19,3 +19,7 @@ in extent and resolution.
  - [ ] srb (lo,hi,project)
 * Consider best srb resampling method (hi to project)
 * polish project workflow, topographic correction from DEM to monthly climatology
+* replace R shade with PyForShade
+* Implement quicker, more compact shade:
+ - Single shade raster for each azimuth, storing int values of 'horizon zenith'
+ - for each azimuth, start with 90 zen and work up until the first shade.all()==1 (no shaded terrain)

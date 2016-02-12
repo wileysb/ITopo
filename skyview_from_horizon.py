@@ -38,6 +38,7 @@ for azimuth in range(1,360):
     horizon = gdal_load(horizon_fmt.format(float(azimuth)))
     skyview += sum_azi_slice(horizon)/slice_max
 
+skyview = skyview / 360.
 skyview_args = {'x_size': project_parameters['x_size'], 'y_size': project_parameters['y_size'],
                 'ulx': project_parameters['xmin'], 'uly': project_parameters['ymax'],
                 'epsg': project_parameters['epsg'], 'dx': project_parameters['dx'], 'dy': project_parameters['dy'],

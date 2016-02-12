@@ -25,12 +25,12 @@ outfn = os.path.join(project_parameters['dem_dir'],'skyview_horizon.tif')
 
 def sum_azi_slice(horizon_grid):
     skyview_slice = np.zeros_like(horizon_grid)
-    for altitude in range(0,90):
+    for altitude in range(1,90):
         skyview_slice += np.where(horizon_grid<=altitude, np.cos(np.deg2rad(altitude)), 0)
     return skyview_slice
 
 
-slice_max = np.cos(np.deg2rad(np.arange(0,90))).sum()
+slice_max = np.cos(np.deg2rad(np.arange(1,90))).sum()
 
 horizon = gdal_load(horizon_fmt.format(0.0))
 skyview = sum_azi_slice(horizon)/slice_max

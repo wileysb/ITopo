@@ -20,7 +20,8 @@ in extent and resolution.
 * Consider best srb resampling method (hi to project)
 * polish project workflow, topographic correction from DEM to monthly climatology
 * replace R shade with PyForShade
-* Implement quicker, more compact shade:
- - [x] Single shade raster for each azimuth, storing int values of 'horizon zenith':
- - $ parallel -j 12 python find_horizon.py gjende100m {} ::: {0..359}
- - for each azimuth, start with 90 zen and work up until the first shade.all()==1 (no shaded terrain)
+* [x] Implement quicker, more compact shade
+ - wean itopo calculations from BOGs --> horizon
+* Can I run shade to measure 'obstruction at 2m' for each cell, with all other cells from topo elevation?
+ - Simulating irrad that would be measured by a sensor at 2m at that location . . .
+* [ ] script to test r2py doshade timing 

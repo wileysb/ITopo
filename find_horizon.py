@@ -12,9 +12,7 @@ from rpy2.robjects.packages import importr
 from topocorr_funcs import gdal_save_grid
 
 project_name = sys.argv[1]
-# demfn = sys.argv[3]
 azi   = float(sys.argv[2])
-# horizon_out = sys.argv[4]
 
 project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
 with file(project_param_fn) as f:

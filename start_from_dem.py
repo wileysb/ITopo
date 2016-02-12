@@ -4,7 +4,7 @@
  - path to DEM
  - DEM derivatives directory
  - SRB directory
- - Binary Obstruction Grid (BOG) directory
+ - horizon directory
  - temporary timestep and processing directory
 * Init spatial parameters
  - Define geotransforms for:
@@ -17,9 +17,8 @@
  - Slope and Aspect
  - Lat and Lon
  - Sunview and Skyview
- -- Binary Obstruction Grids
+ -- horizons
  -- accumulate skyview
- -- pre-stack a year's worth of 3hr sunview grids, or just save them if they aren't saved yet?
 """
 
 import os
@@ -32,7 +31,7 @@ from topocorr_funcs import Safe_mkdir, Get_gt_dict, transform_epsg2epsg, t_xy, m
 
 __author__ = 'Wiley Bogren'
 
-project_name = sys.argv[1]  # $ python start_project.py projectName
+project_name = sys.argv[1]  # $ python start_project.py projectName path/to/dem.tif|.asc|.dem
 dem_fn = sys.argv[2]
 project_param_fn = '{0}/{0}_parameters.yaml'.format(project_name)
 
@@ -174,12 +173,6 @@ else:
     print 'Making Lat and Lon grids in output projection'
     mk_latlon_grids(**latlon_args)
 
-    # Prepare gen_sunview.py parallel arguments
-    sunview_cmds_fn = os.path.join(project_parameters['itopo_dir'], 'sunview_{0}.cmds'.format(project_name))
-    with open(sunview_cmds_fn, 'w') as f:
-        for utc_hr in range(0, 22, 3):
-            f.write('python gen_sunview.py {0} {1}\n'.format(project_name, utc_hr))
-
     # Prepare itopo_1month.sh parallel arguments
     months_cmds_fn = os.path.join(project_parameters['itopo_dir'], 'itopo_months_{0}.cmds'.format(project_name))
     months_to_run = []
@@ -187,27 +180,19 @@ else:
         for year in range(project_parameters['first_year'], project_parameters['last_year']+1):
             months_to_run.append('./itopo_1month.sh {0} {1} {2} $$ rm -rf {0}/tmp/{1}{2} \n'.format(project_name, year, str(mm).zfill(2)))
 
+
     with open(months_cmds_fn, 'w') as f:
         f.writelines(months_to_run)
 
-    # Prepare Stage 2 commands
-    bash_cmds = ['#!/usr/bin/env bash\n', '\n']
-
-    bash_cmds.append('parallel -j $1 -- < {0}/BOG.cmds\n'.format(project_name))
-    bash_cmds.append('python accumulate_skyview.py '+project_name+'\n')
-    bash_cmds.append('parallel -j $1 -- < {0}\n'.format(sunview_cmds_fn))
-    bash_cmds.append('parallel -j $1 -- < {0}\n'.format(months_cmds_fn))
-
-    with open(project_name+'.sh', 'w') as f:
-        f.writelines(bash_cmds)
 
     with file(project_param_fn, 'w') as f:
         yaml.safe_dump(project_parameters, f)
 
     print ' '
-    print 'Choose the number of processors to dedicate (numThreads) then execute these two commands to continue:'
-    print './cast_shade.sh', project_name, 'numThreads'
-    print 'FOLLOWED BY'
-    print './itopo_1month.sh', project_name, 'yyyy mm'
-    print 'OR'
-    print 'parallel -j numThreads -N 2 ./itopo_1month.sh', project_name,'::: yyyy mm yyyy mm'
+    print 'Choose the number of processors to dedicate (numThreads) then execute:'
+    print './run_project.sh {0} numThreads'.format(project_name)
+    #print './cast_shade.sh', project_name, 'numThreads'
+    #print 'FOLLOWED BY'
+    #print './itopo_1month.sh', project_name, 'yyyy mm'
+    #print 'OR'
+    #print 'parallel -j numThreads -N 2 ./itopo_1month.sh', project_name,'::: yyyy mm yyyy mm'

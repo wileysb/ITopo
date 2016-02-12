@@ -334,7 +334,7 @@ def Get_diffuse_fraction(sw_sfc_dn, sw_toa_dn, utc_hour, yday,lat, lon):
 # Workflow (scriptlike) functions
 def Cast_shade(project_parameters, lat, lon, yday, utc_hour):
     shade_map = np.zeros(lat.shape, dtype='int')
-    zen_over_horizon = 90-project_parameters['steepest_slope']
+    # zen_over_horizon = 90-project_parameters['steepest_slope']
 
     hour = Get_utc_offset(lon) + utc_hour  # 'local time in hours'
     sza_fl = (Get_solar_elevation(lat, yday, hour, return_sza=True))
@@ -347,18 +347,25 @@ def Cast_shade(project_parameters, lat, lon, yday, utc_hour):
     s_az = np.round(s_az_fl, 0)
 
     az = np.unique(s_az)
-    zen = np.unique(sza)
+    # zen = np.unique(sza)
 
-    for solar_zen in zen:
-        if solar_zen <= 89:
-            for solar_az in az:
-                mask = ((sza == solar_zen) & (s_az == solar_az))
-                if mask.any():
-                    if solar_zen >= zen_over_horizon:
-                        shade = gdal_load(project_parameters['BOG'].format(int(solar_az), int(solar_zen))).astype('int')
-                    else:
-                        shade = np.ones_like(lat)  # not zeros?
-                    shade_map[mask] = shade[mask]
+    for azimuth in az:
+        horizon = project_parameters['hor'].format(float(az))
+        azi_mask = (s_az==azimuth)
+        shade_map[azi_mask] = (horizon[azi_mask] < 90-sza[azi_mask])
+
+
+
+        #for solar_zen in zen:
+        #    if solar_zen <= 89:
+        #        mask = ((sza == solar_zen) & (s_az == azimuth))
+        #        if mask.any():
+        #            shade_map[mask]
+        #            if solar_zen >= zen_over_horizon:
+        #                shade = gdal_load(project_parameters['BOG'].format(int(solar_az), int(solar_zen))).astype('int')
+        #            else:
+        #                shade = np.ones_like(lat)  # not zeros?
+        #            shade_map[mask] = shade[mask]
 
     return shade_map
 

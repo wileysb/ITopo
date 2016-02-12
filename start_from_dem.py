@@ -50,12 +50,9 @@ else:
     project_parameters['dem_dir'] = os.path.join(project_parameters['itopo_dir'], 'dem_derivs/')
     project_parameters['dem'] = os.path.join(project_parameters['dem_dir'], project_name+'_dem.tif')
     project_parameters['sky'] = os.path.join(project_parameters['dem_dir'], project_name+'_skyview.tif')
-    project_parameters['BOG_dir'] = os.path.join(project_parameters['dem_dir'], 'BOGs')
+    project_parameters['hor_dir'] = os.path.join(project_parameters['dem_dir'], 'horizon')
     project_parameters['out_dir'] = os.path.join(project_parameters['itopo_dir'], 'monthly_means')
-    project_parameters['BOG'] = os.path.join(project_parameters['BOG_dir'], 'az{0}zen{1}.asc')#.format(solar_az,solar_zen)
-
-    sunview_dir = os.path.join(project_parameters['dem_dir'], 'sunview')
-    project_parameters['sunview'] = os.path.join(sunview_dir, 'sunview_{0}_{1}.tif')
+    project_parameters['hor'] = os.path.join(project_parameters['hor_dir'],'horizon_{0}azi.tif')
 
     project_parameters['srb'] = os.path.join(project_parameters['srb_dir'],'srb_rel3.0_shortwave_3hrly_{0}{1}.nc')#.format(yyyy,mm)
 
@@ -67,9 +64,8 @@ else:
     Safe_mkdir(project_parameters['itopo_dir'])
     Safe_mkdir(project_parameters['tmp_dir'])
     Safe_mkdir(project_parameters['dem_dir'])
-    Safe_mkdir(project_parameters['BOG_dir'])
+    Safe_mkdir(project_parameters['hor_dir'])
     Safe_mkdir(project_parameters['out_dir'])
-    Safe_mkdir(sunview_dir)
 
     project_parameters['init_cmds'] = []
 

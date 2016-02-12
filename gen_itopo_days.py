@@ -46,10 +46,11 @@ if __name__ == "__main__":
         yday = ydays[i]
         utc_hour = utc_hours[i]
 
-        if os.path.isfile(shade_fmt.format(yday, utc_hour)):
-            shade = gdal_load(shade_fmt.format(yday, utc_hour)) # turbo!
-        else:
-            shade = Cast_shade(lat, lon, yday, utc_hour)    # not-turbo :-(
+        #if os.path.isfile(shade_fmt.format(yday, utc_hour)):
+        #    shade = gdal_load(shade_fmt.format(yday, utc_hour)) # turbo!
+        #else:
+         #   shade = Cast_shade(lat, lon, yday, utc_hour)    # not-turbo :-(
+        shade = Cast_shade(lat, lon, yday, utc_hour)    # turbo-ish
 
 
         sw_sfc_dn_utm = gdal_load(file_fmt.format('sw_sfc_dn',yyyy,yday,utc_hour))

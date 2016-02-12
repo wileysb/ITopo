@@ -21,7 +21,7 @@ with file(project_param_fn) as f:
     project_parameters = yaml.safe_load(f)
 
 horizon_fmt = os.path.join(project_parameters['dem_dir'],'horizon','horizon_{0}azi.tif')#.format(azi)
-outfn = os.path.join(project_parameters['dem_dir'],'skyview_horizon.tif')
+outfn = os.path.join(project_parameters['sky'])
 
 def sum_azi_slice(horizon_grid):
     skyview_slice = np.zeros_like(horizon_grid)

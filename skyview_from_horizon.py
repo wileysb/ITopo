@@ -26,7 +26,7 @@ outfn = os.path.join(project_parameters['dem_dir'],'skyview_horizon.tif')
 def sum_azi_slice(horizon_grid):
     skyview_slice = np.zeros_like(horizon_grid)
     for altitude in range(0,90):
-        skyview_slice += np.where(horizon_grid<altitude, np.cos(np.deg2rad(altitude)), 0)
+        skyview_slice += np.where(horizon_grid<=altitude, np.cos(np.deg2rad(altitude)), 0)
     return skyview_slice
 
 

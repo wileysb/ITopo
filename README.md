@@ -34,7 +34,7 @@
  - For each pixel, load binary 'obstruction' value from topographic obstruction grid matching local solar position and save grid as sunview(t)
 * for every month from January 1984 - December 2007:
  - 3 hour UTC timestep within the given month:
-  1. compute solar position grids (azimuth and zenith) in local time
+  - compute solar position grids (azimuth and zenith) in local time
   2. derive diffuse fraction of global radiation, after Skartveit et al \cite{skartveit98}
   3. resample 'diffuse fraction' and 'downwelling shortwave at the surface' grids from 1x1\degree to 1x1km UTM-33N
   4. topographic correction factor, direct irradiance

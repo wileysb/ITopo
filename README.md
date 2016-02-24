@@ -35,10 +35,10 @@
 * for every month from January 1984 - December 2007:
  - 3 hour UTC timestep within the given month:
   - [ ] compute solar position grids (azimuth and zenith) in local time
-  2. derive diffuse fraction of global radiation, after Skartveit et al \cite{skartveit98}
-  3. resample 'diffuse fraction' and 'downwelling shortwave at the surface' grids from 1x1\degree to 1x1km UTM-33N
-  4. topographic correction factor, direct irradiance
-  5. diffuse correction factor: diffuse fraction*skyview
-  6. topographic correction = diffuse correction + direct correction
+  - [ ] derive diffuse fraction of global radiation, after Skartveit et al \cite{skartveit98}
+  - [ ] resample 'diffuse fraction' and 'downwelling shortwave at the surface' grids from 1x1\degree to 1x1km UTM-33N
+  - [ ] topographic correction factor, direct irradiance
+  - [ ] diffuse correction factor: diffuse fraction*skyview
+  - [ ] topographic correction = diffuse correction + direct correction
  - average all timesteps for monthly averages
 * average all 23 years of each month for 'climatological monthly means'

@@ -1,8 +1,5 @@
 # Topographic correction of irradiance.
 
-Trying to make the code more streamlined and flexible, rather than locked 
-in extent and resolution.
-
 
 ### Directions for use:
 1. Prepare a dem in the desired output projection and alignment
@@ -25,3 +22,23 @@ in extent and resolution.
 * Can I run shade to measure 'obstruction at 2m' for each cell, with all other cells from topo elevation?
  - Simulating irrad that would be measured by a sensor at 2m at that location . . .
 * [ ] script to test r2py doshade timing 
+
+
+### WORKFLOW SUMMARY
+* Derive time-independent grids (DEM derivatives)
+ - Slope, aspect, latitude, and longitude
+ - Binary Obstruction Grids
+ - sum over hemisphere, weighted by cos zenith, to derive skyview grid
+* for each 3 hour UTC timestep in 1 arbitrary year:
+ - compute solar position grids (azimuth and zenith) in local time
+ - For each pixel, load binary 'obstruction' value from topographic obstruction grid matching local solar position and save grid as sunview(t)
+* for every month from January 1984 - December 2007:
+ - 3 hour UTC timestep within the given month:
+ -- compute solar position grids (azimuth and zenith) in local time
+ -- derive diffuse fraction of global radiation, after Skartveit et al \cite{skartveit98}
+ -- resample 'diffuse fraction' and 'downwelling shortwave at the surface' grids from 1x1\degree to 1x1km UTM-33N
+ -- topographic correction factor, direct irradiance
+ -- diffuse correction factor: diffuse fraction*skyview
+ -- topographic correction = diffuse correction + direct correction
+ - average all timesteps for monthly averages
+* average all 23 years of each month for 'climatological monthly means'

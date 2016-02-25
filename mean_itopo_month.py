@@ -27,12 +27,12 @@ if __name__ == "__main__":
 
     out_fmt = os.path.join(project_parameters['out_dir'], '{0}_{1}_{2}.tif')  # .format(dset,yyyy,mm)
 
-    srb_3hr_fn = project_parameters['srb'].format(yyyy, mm)
+    #srb_3hr_fn = project_parameters['srb'].format(yyyy, mm)
 
-    srb_3hr_vars = unpack_srb_variables(srb_3hr_fn, project_parameters)
+    #srb_3hr_vars = unpack_srb_variables(srb_3hr_fn, project_parameters)
 
-    ydays = srb_3hr_vars['ydays']
-    utc_hours = srb_3hr_vars['utc_hours']
+    #ydays = srb_3hr_vars['ydays']
+    #utc_hours = srb_3hr_vars['utc_hours']
 
     dsets = {}
 

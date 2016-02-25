@@ -56,6 +56,10 @@ else:
 
     project_parameters['srb'] = os.path.join(project_parameters['srb_dir'],'srb_rel3.0_shortwave_3hrly_{0}{1}.nc')#.format(yyyy,mm)
 
+    # These are probably not used:
+    sunview_dir = os.path.join(project_parameters['dem_dir'], 'sunview')
+    project_parameters['sunview'] = os.path.join(sunview_dir, 'sunview_{0}_{1}.tif')
+
     if not os.path.isfile(dem_fn) | os.path.isfile(project_parameters['dem']):
         print "USAGE: python start_from_dem.py projectName /path/to/src_dem.tif"
         sys.exit(1)
@@ -100,14 +104,6 @@ else:
 
     slope = gdal_load(project_parameters['slp'])
     project_parameters['steepest_slope'] = int(math.ceil(np.nanmax(slope)))
-    #bog_cmd_list = []
-    #for az in range(0, 360):
-    #    for zen in range(90-project_parameters['steepest_slope'], 90):
-    #        outfn = project_parameters['BOG'].format(az, zen)
-    #        bog_cmd_list.append("Rscript mk_shade_grid.R {0} {1} {2} {3}\n".format(
-    #            project_parameters['dem'], zen, az, outfn))
-    #with open(os.path.join(project_parameters['itopo_dir'], 'BOG.cmds'), 'w') as bog_cmds:
-    #    bog_cmds.writelines(bog_cmd_list)
 
     ###  DEFINE GEOTRANSFORMS
     if 'dem_gt' not in project_parameters.keys():
@@ -174,7 +170,7 @@ else:
     months_to_run = []
     for mm in project_parameters['months'].split():
         for year in range(project_parameters['first_year'], project_parameters['last_year']+1):
-            months_to_run.append('./itopo_1month.sh {0} {1} {2} $$ rm -rf {0}/tmp/{1}{2} \n'.format(project_name, year, str(mm).zfill(2)))
+            months_to_run.append('./itopo_1month.sh {0} {1} {2} && rm -rf {0}/tmp/{1}{2} \n'.format(project_name, year, str(mm).zfill(2)))
 
 
     with open(months_cmds_fn, 'w') as f:
@@ -187,8 +183,3 @@ else:
     print ' '
     print 'Choose the number of processors to dedicate (numThreads) then execute:'
     print './run_project.sh {0} numThreads'.format(project_name)
-    #print './cast_shade.sh', project_name, 'numThreads'
-    #print 'FOLLOWED BY'
-    #print './itopo_1month.sh', project_name, 'yyyy mm'
-    #print 'OR'
-    #print 'parallel -j numThreads -N 2 ./itopo_1month.sh', project_name,'::: yyyy mm yyyy mm'

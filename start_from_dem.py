@@ -172,7 +172,7 @@ else:
     # Prepare itopo_1month.sh parallel arguments
     months_cmds_fn = os.path.join(project_parameters['itopo_dir'], 'itopo_months_{0}.cmds'.format(project_name))
     months_to_run = []
-    for mm in project_parameters['months']:
+    for mm in project_parameters['months'].split():
         for year in range(project_parameters['first_year'], project_parameters['last_year']+1):
             months_to_run.append('./itopo_1month.sh {0} {1} {2} $$ rm -rf {0}/tmp/{1}{2} \n'.format(project_name, year, str(mm).zfill(2)))
 

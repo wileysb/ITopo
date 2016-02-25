@@ -100,14 +100,14 @@ else:
 
     slope = gdal_load(project_parameters['slp'])
     project_parameters['steepest_slope'] = int(math.ceil(np.nanmax(slope)))
-    bog_cmd_list = []
-    for az in range(0, 360):
-        for zen in range(90-project_parameters['steepest_slope'], 90):
-            outfn = project_parameters['BOG'].format(az, zen)
-            bog_cmd_list.append("Rscript mk_shade_grid.R {0} {1} {2} {3}\n".format(
-                project_parameters['dem'], zen, az, outfn))
-    with open(os.path.join(project_parameters['itopo_dir'], 'BOG.cmds'), 'w') as bog_cmds:
-        bog_cmds.writelines(bog_cmd_list)
+    #bog_cmd_list = []
+    #for az in range(0, 360):
+    #    for zen in range(90-project_parameters['steepest_slope'], 90):
+    #        outfn = project_parameters['BOG'].format(az, zen)
+    #        bog_cmd_list.append("Rscript mk_shade_grid.R {0} {1} {2} {3}\n".format(
+    #            project_parameters['dem'], zen, az, outfn))
+    #with open(os.path.join(project_parameters['itopo_dir'], 'BOG.cmds'), 'w') as bog_cmds:
+    #    bog_cmds.writelines(bog_cmd_list)
 
     ###  DEFINE GEOTRANSFORMS
     if 'dem_gt' not in project_parameters.keys():

@@ -49,7 +49,7 @@ if __name__ == "__main__":
         if os.path.isfile(shade_fmt.format(yday, utc_hour)):
             shade = gdal_load(shade_fmt.format(yday, utc_hour))  # turbo!
         else:
-            shade = Horizon_shade(lat, lon, yday, utc_hour)    # turbo-ish?
+            shade = Horizon_shade(project_parameters, lat, lon, yday, utc_hour)    # turbo-ish?
 
         sw_sfc_dn_utm = gdal_load(file_fmt.format('sw_sfc_dn', yyyy, yday, utc_hour))
 

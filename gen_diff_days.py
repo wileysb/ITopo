@@ -1,5 +1,13 @@
 #!/usr/bin/python
 """
+* Call after horizon and skyview functions
+* Call once for all timesteps within specified month
+* Script called with 3 arguments: projectName, year, month
+* For each timestep within the specified month, produces diffuse proportion and surface irradiance grids at the DEM projection, extent, and resolution:
+    * Derives diffuse proportion from 1-degree lat-lon irradiance at surface and TOA, loaded from SRB files
+    * Resamples in memory diffuse proportion and surface irradiance to finer resolution lat-lon grid over project area
+    * Resamples diffuse proportion and surface irradiance to DEM spatial parameters (saved to disk)
+
 About 6 minutes per month, at 100m
 """
 

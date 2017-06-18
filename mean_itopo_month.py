@@ -1,5 +1,15 @@
 #!/usr/bin/python
 
+'''
+* Call after gen_itopo_days.py
+* Call once for all timesteps within specified month
+* Script called with 3 arguments: projectName, year, month
+* Produces monthly mean grids from all timesteps in the specified month for:
+    * diffuse proportion
+    * surface irradiance
+    * topographically adjusted irradiance
+'''
+
 import os
 import sys
 import glob

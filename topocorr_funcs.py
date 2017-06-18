@@ -1,9 +1,18 @@
 #!/usr/bin/python
 
 """
+* Contains core functions called by other scripts:
+    * Direct/diffuse proportion
+    * Topographic correction
+    * Solar angle as a function of time and position
+    * Reprojections and file reading/writing/management
+
+
 Functions for calculating topographic corrections to surface downwelling irradiance
 
-These functions are mostly implementations of the equations from the following two refernces:
+These functions are mostly implementations and extensive workflow wrappers of
+the equations from the following two references:
+
 Modelling topographic variation in solar radiation in a GIS environment
 L Kumar et al, 1997
 

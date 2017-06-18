@@ -1,5 +1,15 @@
 #!/usr/bin/python
 
+'''
+* Call after gen_diff_days.py
+* Call once for all timesteps within specified month
+* Script called with 3 arguments: projectName, year, month
+* For each timestep within the specified month, performs and saves topographic correction of surface irradiance:
+    * loads surface irradiance, diffuse proportion, skyview, and shade (sunview)
+    * calculates topographic correction for diffuse and direct irradiance
+    * combines diffuse and direct correction based on diffuse proportion
+    * writes out surface irradiance for that timestep adjusted by topography
+'''
 import sys
 import os
 import yaml

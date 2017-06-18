@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-"""Define skyview using the horizon grids for az=0:369
+"""
+* Run after 'find_horizon.py'
+* Produces a set of 360 raster grids, each giving the altitude of the last obstruction in the given azimuth direction for every cell
+  (ie, the degrees above horizontal where the sky or sun is first visible instead of topography)
 
 The sum of visible angles is weighted
 by cosine(90-zenith) to account for smaller sectors per degree

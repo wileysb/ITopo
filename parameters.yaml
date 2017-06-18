@@ -1,3 +1,5 @@
+# Adjust parameters to suit project, then save as 'projectName_parameters.yaml'
+
 ### GENERIC PARAMETERS ###
 srb_dir: /space/wib_data/CLIMATE/NASA/srb_3hr/
 itopo_dir: /home/sl_wib/ITopo/

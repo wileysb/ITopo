@@ -1,6 +1,7 @@
 #!/usr/bin/python
 """
-Give the altitude of the last obstruction in the given azimuth direction for every cell 
+* Produces a set of 360 raster grids, each giving the altitude of the last obstruction in the given azimuth direction for every cell
+  (ie, the degrees above horizontal where the sky or sun is first visible instead of topography)
 """
 
 import os

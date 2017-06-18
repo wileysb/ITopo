@@ -1,5 +1,14 @@
 #!/usr/bin/python
 """
+* Script called with project name and path to DEM
+* Loads project parameters
+* Creates output directories for both final and temporary products
+* Loads spatial parameters from DEM: projection, extent, and resolution
+* Creates Slope, Aspect, Lat, and Lon raster derivatives from the elevation model
+* Generates syntax for further processing commands based on project parameters, DEM spatial parameters, and directory structure
+* Prints initial commands to standard out, and writes parallel-processing and sequential commands to file
+
+
 * Init Paths
  - path to DEM
  - DEM derivatives directory
@@ -52,9 +61,10 @@ else:
     project_parameters['sky'] = os.path.join(project_parameters['dem_dir'], project_name+'_skyview.tif')
     project_parameters['hor_dir'] = os.path.join(project_parameters['dem_dir'], 'horizon')
     project_parameters['out_dir'] = os.path.join(project_parameters['itopo_dir'], 'monthly_means')
-    project_parameters['hor'] = os.path.join(project_parameters['hor_dir'],'horizon_{0}azi.tif')
+    project_parameters['hor'] = os.path.join(project_parameters['hor_dir'], 'horizon_{0}azi.tif')
 
-    project_parameters['srb'] = os.path.join(project_parameters['srb_dir'],'srb_rel3.0_shortwave_3hrly_{0}{1}.nc')#.format(yyyy,mm)
+    project_parameters['srb'] = os.path.join(project_parameters['srb_dir'], 'srb_rel3.0_shortwave_3hrly_{0}{1}.nc')
+    # .format(yyyy, mm)
 
     # These are probably not used:
     sunview_dir = os.path.join(project_parameters['dem_dir'], 'sunview')
@@ -110,10 +120,6 @@ else:
         project_parameters['dem_gt'] = Get_gt_dict(project_parameters['dem'])
         project_parameters['x_size'] = project_parameters['dem_gt']['x_size']
         project_parameters['y_size'] = project_parameters['dem_gt']['y_size']
-    # todo NOTE:
-    #  in the hardcoded utm33n_md, 'ulx' and 'uly' off by 500m (pixel corners vs pixel center)
-    #   'ulx':-84500.00 hardcoded, vs  -85000.0  from function
-    #   'uly':7961500.0 hardcoded, vs  7962000.0 from function
 
     # Get srb bounding ulx and uly + x_size, y_size
     # This is only OK as long as corners from project_extents form geographic max + min values
@@ -170,12 +176,12 @@ else:
     months_to_run = []
     for mm in project_parameters['months'].split():
         for year in range(project_parameters['first_year'], project_parameters['last_year']+1):
-            months_to_run.append('./itopo_1month.sh {0} {1} {2} && rm -rf {0}/tmp/{1}{2} \n'.format(project_name, year, str(mm).zfill(2)))
-
+            months_to_run.append('./itopo_1month.sh {0} {1} {2} && rm -rf {0}/tmp/{1}{2} \n'.format(project_name,
+                                                                                                    year,
+                                                                                                    str(mm).zfill(2)))
 
     with open(months_cmds_fn, 'w') as f:
         f.writelines(months_to_run)
-
 
     with file(project_param_fn, 'w') as f:
         yaml.safe_dump(project_parameters, f)
